@@ -5,7 +5,7 @@ const Incident = require('../models/Incident');
 // Create new incident report
 exports.createIncident = async (req, res) => {
   try {
-    const { type, description, location } = req.body;
+    const { type, description, longitude, latitude } = req.body;
 
     const newIncident = new Incident({
       user_id: req.user.id,
