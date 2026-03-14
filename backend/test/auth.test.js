@@ -6,7 +6,7 @@ describe("Authentication API Tests", () => {
 
   const testUser = {
     name: "Test User",
-    email: 'test${Date.now()}@example.com',
+    email: `test${Date.now()}@example.com`,
     password: "123456",
     role: "Citizen",
   contact_number: "0771234567"
