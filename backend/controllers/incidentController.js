@@ -14,7 +14,8 @@ exports.createIncident = async (req, res) => {
       location: {
         type: 'Point',
         coordinates: [parseFloat(longitude), parseFloat(latitude)] // Location update
-      }
+      },
+      image: req.file ? req.file.path : null
     });
 
     const savedIncident = await newIncident.save();
