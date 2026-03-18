@@ -1,11 +1,15 @@
 const Report = require("../models/Report");
-const Media = require("../models/Media");
+// const Media = require("../models/Media");
 
 // Create report
 exports.createReport = async (req, res) => {
   try {
 
+     console.log("NEW CONTROLLER RUNNING");
+
     const { type, description, latitude, longitude } = req.body;
+
+    const imageUrl = req.file ? req.file.path : null;
 
     const newReport = new Report({
       type,
@@ -13,27 +17,28 @@ exports.createReport = async (req, res) => {
       location: {
         latitude,
         longitude
-      }
+      },
+      media: imageUrl
     });
 
     await newReport.save();
 
-    let mediaData = null;
+    // let mediaData = null;
 
-    if (req.file) {
-      mediaData = new Media({
-        incident_id: newReport._id,
-        file_url: req.file.path,
-        file_type: "image"
-      });
+    // if (req.file) {
+    //   mediaData = new Media({
+    //     incident_id: newReport._id,
+    //     file_url: req.file.path,
+    //     file_type: "image"
+    //   });
 
-      await mediaData.save();
-    }
+    //   await mediaData.save();
+    // }
 
     res.status(201).json({
       message: "Report submitted successfully",
       report: newReport,
-      media: mediaData
+      // media: mediaData
     });
 
   } catch (error) {

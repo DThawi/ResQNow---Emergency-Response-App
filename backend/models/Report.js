@@ -12,7 +12,10 @@ const reportSchema = new mongoose.Schema({
   location: {
     latitude: Number,
     longitude: Number
-  }
+  },
+  media: String, // URL of the uploaded media
+},
+{  timestamps: true
 });
 
 module.exports = mongoose.model("Report", reportSchema);
