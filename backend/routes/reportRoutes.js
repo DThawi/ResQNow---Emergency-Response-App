@@ -11,7 +11,7 @@ const {
 const upload = require("../middleware/uploadMiddleware");
 
 // Create report with image
-router.post("/", upload.single("image"), createReport);
+router.post("/", upload.single("media"), createReport);
 
 // Get all reports
 router.get("/", getReports);
