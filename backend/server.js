@@ -1,70 +1,25 @@
 require("dotenv").config();
 const express = require("express");
-const connectDB = require("./db"); // your MongoDB connection file
+const connectDB = require("./db");
 const User = require("./models/User");
 
 // Route imports
 const authRoutes = require("./routes/authRoutes.js");
-
 const incidentRoutes = require("./routes/incidentRoutes.js");
-const reportRoutes = require("./routes/reportRoutes.js");
+//const reportRoutes = require("./routes/reportRoutes.js");
 const uploadRoutes = require("./routes/uploadRoutes");
 
 const app = express();
-
-// Root endpoint
-
-
-const incidentRoutes = require('./routes/incidentRoutes.js');
-
-
-
-
 
 // Connect DB
 connectDB();
 
 app.use(express.json());
 
-// Auth routes
-app.use("/api/auth", authRoutes);
-
-app.use('/api/incidents', incidentRoutes);
-
-
-app.get("/", (req, res) => {
-  res.send("ResQNow backend running");
-});
-
-// TEMPORARY: Reset admin password safely (only for testing)
-app.get("/reset-admin-password", async (req, res) => {
-  const bcrypt = require("bcryptjs");
-  try {
-    const admin = await User.findOne({ email: "admin@test.com" });
-    if (!admin) return res.status(404).send("Admin not found");
-
-    admin.password = await bcrypt.hash("123456", 10); // reset password
-    await admin.save();
-
-    res.send("Admin password reset to 123456 ✅");
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error resetting password");
-  }
-});
-
-// Test DB endpoint
-app.get("/test-db", async (req, res) => {
-  // ...
-});
-
-// Middleware
-app.use(express.json());
-
 // Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/incident", incidentRoutes);
-app.use("/api/reports", reportRoutes);
+app.use("/api/incidents", incidentRoutes);
+//app.use("/api/reports", reportRoutes);
 app.use("/api/upload", uploadRoutes);
 
 // Root endpoint
@@ -83,12 +38,12 @@ app.get("/test-db", async (req, res) => {
   }
 });
 
-// Server start function
+// Server start
 const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
-    await connectDB(); // wait for DB connection
+    await connectDB();
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT} ✅`);
     });
@@ -98,13 +53,8 @@ const startServer = async () => {
   }
 };
 
-// Only start server if not testing
 if (process.env.NODE_ENV !== "test") {
   startServer();
 }
 
-
-// Export app for testing
 module.exports = app;
-
-
