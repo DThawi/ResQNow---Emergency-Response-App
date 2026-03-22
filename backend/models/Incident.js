@@ -23,6 +23,14 @@ const IncidentSchema = new mongoose.Schema({
     enum: ['Pending', 'Verified', 'Assigned', 'Resolved'], // Matches your Lifecycle Logic [cite: 273]
     default: 'Pending' 
   },
+  status_history: [{
+    status: { 
+      type: String, 
+      enum: ['Pending', 'Verified', 'Assigned', 'Resolved']
+    },
+    timestamp: { type: Date, default: Date.now },
+    changed_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+  }],
   timestamp: { type: Date, default: Date.now }
 });
 IncidentSchema.index({ location: '2dsphere' }); //find nearby queries
