@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
-const User = require("./models/User");
-require("dotenv").config();
+const path = require("path");
+const User = require("../models/User");
+require("dotenv").config({ path: path.join(__dirname, "../.env") });
 
 (async () => {
   try {
@@ -21,7 +22,11 @@ require("dotenv").config();
       password: passwordHash,
       role: "Admin",             // <-- MUST be exact
       contact_number: "0770000000",
-      registered_date: new Date()
+      registered_date: new Date(),
+      location: {
+        type: 'Point',
+        coordinates: [0, 0] // Dummy coordinates to satisfy schema validation
+      }
     });
 
     await admin.save();
