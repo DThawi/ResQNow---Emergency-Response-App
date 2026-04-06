@@ -1,7 +1,8 @@
 import React from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+
 import BulletItem from "../components/symbols/bullets";
+import GradientHeader from "../components/layout/header";
 
 
 const PrivacyPolicy = ({ navigation }) => {
@@ -9,17 +10,10 @@ const PrivacyPolicy = ({ navigation }) => {
     <View className="flex-1 bg-gray-100">
 
       {/* Header */}
-      
-      <LinearGradient
-      colors={["#D62828", "#003049"]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 0 }}
-      className="flex-row justify-between items-center px-4 py-4">
-        <Text className="text-white text-lg font-bold">Privacy Policy</Text>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text className="text-white text-lg">✕</Text>
-        </TouchableOpacity>
-        </LinearGradient>
+      <GradientHeader 
+        title="Privacy Policy" 
+        onClose={() => navigation.goBack()} 
+      />
       
 
       {/* Content */}
