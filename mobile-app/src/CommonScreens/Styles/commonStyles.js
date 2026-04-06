@@ -1,55 +1,82 @@
-import{StyleSheet} from "react-native";
+import { StyleSheet } from "react-native";
 
-export default StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#fff",
-        padding: 10,
-    },
-    title: {
-        fontSize:18,
-        fontWeight: 600,
-        marginBottom: 20,
-        lineHeight: 18,
+const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    backgroundColor: "#f5f6f8",
+  },
 
-    },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 15,
+    backgroundColor: "#b91c1c",
+  },
 
-    textcard: {
-    backgroundColor: "#fff",
+  headerTitle: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+
+  closeBtn: {
+    color: "#fff",
+    fontSize: 18,
+  },
+
+  content: {
+    padding: 15,
+  },
+
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 15,
+    marginBottom: 8,
+    color: "#1f2937",
+  },
+
+  bullet: {
+    fontSize: 14,
+    marginBottom: 6,
+    color: "#374151",
+  },
+
+  paragraph: {
+    fontSize: 14,
+    color: "#6b7280",
+    marginBottom: 10,
+  },
+
+  bold: {
+    fontWeight: "bold",
+  },
+
+  card: {
+    backgroundColor: "#e5e7eb",
     padding: 15,
     borderRadius: 10,
-    marginBottom: 10,
-    elevation: 2,
-    },  
+    marginTop: 20,
+  },
 
-    textHeader: {
-        color: "#003049",
-        fontSize: 18,
-        fontWeight: 600,
-        lineHeight: 28,
-        marginBottom: 5,
-    },
+  cardTitle: {
+    fontSize: 15,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
 
-    textSubHeader: {
-        color: "#2B2D42",
-        fontSize: 14,
-        fontWeight: 700,
-        lineHeight: 20,
-    },
+  cardText: {
+    color: "#dc2626",
+    fontWeight: "bold",
+  },
 
-    textContent:{
-        fontSize: 14,
-        lineHeight: 20,
-        color: "#2B2D42",
-        fontWeight: 400,
-        marginBottom: 10,
+  footer: {
+    textAlign: "center",
+    marginTop: 20,
+    color: "#9ca3af",
+    fontSize: 12,
+  },
+});
 
-    },
-    card:{
-        backgroundColor: "#f9f9f9",
-        padding: 15,
-        borderRadius: 10,
-        marginBottom: 10,
-        elevation: 2,
-    },
-})
+export default styles;
