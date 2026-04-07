@@ -6,8 +6,11 @@ const Register1 = ({ navigation }) => {
     <View style={styles.container}>
       <Text style={styles.title}>Register Step 1</Text>
 
-      
-
+      {/* TEMP BUTTON TO TEST SCREEN */}
+      <Button
+        title="Go to TestScreen"
+        onPress={() => navigation.navigate("TestScreen")}
+      />
     </View>
   );
 };
