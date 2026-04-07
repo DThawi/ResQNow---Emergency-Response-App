@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, Text, View, ActivityIndicator } from 'react-native';
+import { ScrollView, Text, View, ActivityIndicator, Button } from 'react-native';
 import IncidentCard from '../../components/cards/incidentCards';
 import API from '../../services/api';
+import HomeHeader from '../../components/HomeHeader';
 
 const HomeScreen = () => {
   const [incidents, setIncidents] = useState([]);
@@ -44,7 +45,9 @@ const HomeScreen = () => {
   }
 
   return (
-    <ScrollView className="bg-white flex-1 mb-20" contentContainerStyle={{ padding: 16 }}>
+    <View className="flex-1 bg-white">
+      <HomeHeader />
+      <ScrollView className="flex-1 mb-20" contentContainerStyle={{ padding: 16 }}>
       <Button>Request Emergency help</Button>
       <Text className="text-[20px] font-bold mb-5">Recent Incidents</Text>
 
@@ -69,6 +72,7 @@ const HomeScreen = () => {
         ))
       )}
     </ScrollView>
+    </View>
   );
 };
 
