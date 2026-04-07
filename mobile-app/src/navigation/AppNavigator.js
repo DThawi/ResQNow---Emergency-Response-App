@@ -8,6 +8,7 @@ import RegisterScreen from "../screens/auth/Register1"; // Assuming Register1 is
 import PrivacyPolicy from "../CommonScreens/PrivacyPolicy";
 import HomeScreen from "../screens/auth/HomeScreen";
 
+
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
@@ -15,9 +16,11 @@ export default function AppNavigator() {
     <NavigationContainer>
       <Stack.Navigator>
 
-        {/* <Stack.Screen name="Login" component={LoginScreen} /> */}
-        {/* <Stack.Screen name="Register" component={RegisterScreen} /> */}
-        {/* <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} /> */}
+
+
+        <Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
         <Stack.Screen
           name="Home"
           component={HomeScreen}
@@ -25,6 +28,8 @@ export default function AppNavigator() {
             header: () => <HomeHeader />
           }}
         />
+
+
 
       </Stack.Navigator>
     </NavigationContainer>
