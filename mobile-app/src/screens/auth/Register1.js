@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState } from 'react';
 import {
   View,
@@ -75,6 +76,15 @@ export default function Register1({ navigation }) {
         </TouchableOpacity>
 
       </ScrollView>
+=======
+import React from "react";
+import { View, Text, StyleSheet, Button } from "react-native";
+
+const Register1 = ({ navigation }) => {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Register Step 1</Text>
+>>>>>>> main
     </View>
   );
 }
@@ -82,6 +92,7 @@ export default function Register1({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+<<<<<<< HEAD
     backgroundColor: '#F5F5F5',
   },
   header: {
@@ -163,3 +174,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+=======
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    marginBottom: 20,
+  },
+});
+
+export default Register1;
+>>>>>>> main

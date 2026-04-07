@@ -11,6 +11,8 @@ import SetPassword from "../screens/auth/SetPassword";
 import SuccessfulSetPassword from "../screens/auth/SuccessfulSetPassword";
 import ForgotPassword1 from "../screens/auth/ForgotPassword1";
 import LogoutPopup from "../screens/auth/LogoutPopup";
+import PrivacyPolicy from "../CommonScreens/PrivacyPolicy";
+import HomeScreen from "../screens/auth/HomeScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -27,6 +29,8 @@ export default function AppNavigator() {
         <Stack.Screen name="SuccessfulSetPassword" component={SuccessfulSetPassword} />
         <Stack.Screen name="ForgotPassword1" component={ForgotPassword1} />
         <Stack.Screen name="LogoutPopup" component={LogoutPopup} />
+        <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
+        <Stack.Screen name="Home" component={HomeScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
