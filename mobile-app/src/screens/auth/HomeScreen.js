@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, Text, View, ActivityIndicator } from 'react-native';
+import { ScrollView, Text, View, ActivityIndicator, TouchableOpacity } from 'react-native';
 import IncidentCard from '../../components/cards/incidentCards';
 import API from '../../services/api';
+import HomeHeader from '../../components/HomeHeader';
 
 const HomeScreen = () => {
   const [incidents, setIncidents] = useState([]);
@@ -44,31 +45,36 @@ const HomeScreen = () => {
   }
 
   return (
-    <ScrollView className="bg-white flex-1 mb-20" contentContainerStyle={{ padding: 16 }}>
-      <Button>Request Emergency help</Button>
-      <Text className="text-[20px] font-bold mb-5">Recent Incidents</Text>
+    <View className="flex-1 bg-white">
+      <HomeHeader />
+      <ScrollView className="flex-1 mb-20" contentContainerStyle={{ padding: 16 }}>
+        <TouchableOpacity className="bg-[#D62828] h-[50px] rounded-[10px] flex-row justify-center items-center mb-4 mt-2">
+          <Text className="text-white font-bold text-lg">Request Emergency help</Text>
+        </TouchableOpacity>
+        <Text className="text-[20px] font-bold mb-5">Recent Incidents</Text>
 
-      {incidents.length === 0 ? (
-        <Text className="text-slate-500 text-center mt-5">No incidents found.</Text>
-      ) : (
-        incidents.map((incident) => (
-          <IncidentCard
-            key={incident._id}
-            type={incident.type || "Emergency"}
-            status={incident.status || "Pending"}
-            description={incident.description}
-            location={
-              incident.location?.coordinates
-                ? `Lng: ${incident.location.coordinates[0].toFixed(2)}, Lat: ${incident.location.coordinates[1].toFixed(2)}`
-                : "Location Unknown"
-            }
-            timeAgo={getTimeAgo(incident.timestamp)}
-            verifications={0}
-            onPress={() => console.log("Card pressed", incident._id)}
-          />
-        ))
-      )}
-    </ScrollView>
+        {incidents.length === 0 ? (
+          <Text className="text-slate-500 text-center mt-5">No incidents found.</Text>
+        ) : (
+          incidents.map((incident) => (
+            <IncidentCard
+              key={incident._id}
+              type={incident.type || "Emergency"}
+              status={incident.status || "Pending"}
+              description={incident.description}
+              location={
+                incident.location?.coordinates
+                  ? `Lng: ${incident.location.coordinates[0].toFixed(2)}, Lat: ${incident.location.coordinates[1].toFixed(2)}`
+                  : "Location Unknown"
+              }
+              timeAgo={getTimeAgo(incident.timestamp)}
+              verifications={0}
+              onPress={() => console.log("Card pressed", incident._id)}
+            />
+          ))
+        )}
+      </ScrollView>
+    </View>
   );
 };
 
