@@ -12,6 +12,7 @@ import HelpSupport from "../CommonScreens/HelpSupport";
 import ProfileScreen from "../ProfileScreen";
 import EditProfileScreen from "../EditProfileScreen";
 import NotificationSettings from "../NotificationSettingsScreen";
+import HelpSupportScreen from "../HelpSupportScreen";
 import TestScreen from "../TestScreen";
 
 
@@ -34,6 +35,7 @@ export default function AppNavigator() {
         <Stack.Screen name="ProfileScreen" component={ProfileScreen} options={{headerShown:false}} />
         <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} options={{headerShown:false}} />
         <Stack.Screen name="NotificationSettings" component={NotificationSettings} options={{headerShown:false}} />
+        <Stack.Screen name="HelpSupportScreen" component={HelpSupportScreen} options={{headerShown:false}} />
 
         <Stack.Screen name="TestScreen" component={TestScreen}/>
       
