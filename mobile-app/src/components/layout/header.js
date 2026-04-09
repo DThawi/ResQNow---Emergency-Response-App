@@ -7,17 +7,24 @@ import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
+
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+
 
 const GradientHeader = ({ title, type = "back" }) => {
   const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
 
   return (
     <LinearGradient
       colors={["#D62828", "#003049"]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
-      className="flex-row items-center px-4 py-4"
+      className="flex-row items-center px-4 pb-3"
+
+      style={{ paddingTop: insets.top + 12}}
+
     >
       {/* LEFT: Back Arrow */}
       {type === "back" && (

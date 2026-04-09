@@ -1,3 +1,4 @@
+// src/navigation/AppNavigator.js
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -13,15 +14,24 @@ import ForgotPassword1 from "../screens/auth/ForgotPassword1";
 import LogoutPopup from "../screens/auth/LogoutPopup";
 import PrivacyPolicy from "../CommonScreens/PrivacyPolicy";
 import HomeScreen from "../screens/auth/HomeScreen";
+import TermsConditions from "../CommonScreens/TermsConditions";
+import HelpSupport from "../CommonScreens/HelpSupport";
+import ProfileScreen from "../ProfileScreen";
+import EditProfileScreen from "../EditProfileScreen";
+import NotificationSettings from "../NotificationSettingsScreen";
+import HelpSupportScreen from "../HelpSupportScreen";
+import LiveMapScreen from "../screens/Citizen/LiveMapScreen";
 import ReportIncident from "../screens/Citizen/ReportIncident";
+
 
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="ReportIncident" screenOptions={{ headerShown: false }}>
-        {/* <Stack.Screen name="Splash" component={SplashScreen} />
+      <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
+        {/* Auth flow */}
+        <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register1" component={Register1} />
         <Stack.Screen name="Register2" component={Register2} />
@@ -30,12 +40,26 @@ export default function AppNavigator() {
         <Stack.Screen name="SuccessfulSetPassword" component={SuccessfulSetPassword} />
         <Stack.Screen name="ForgotPassword1" component={ForgotPassword1} />
         <Stack.Screen name="LogoutPopup" component={LogoutPopup} />
-        <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} /> */}
-        {/* <Stack.Screen name="Home" component={HomeScreen} /> */}
+        <Stack.Screen name="Map"  component={LiveMapScreen} options={{ headerShown: false }} />
+
+
+
+       
+        <Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} options={{headerShown:false}}/>
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="TermsConditions" component={TermsConditions} options={{headerShown:false}}/>
+        <Stack.Screen name="HelpSupport" component={HelpSupport} options={{headerShown:false}}/>
+        <Stack.Screen name="ProfileScreen" component={ProfileScreen} options={{headerShown:false}} />
+        <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} options={{headerShown:false}} />
+        <Stack.Screen name="NotificationSettings" component={NotificationSettings} options={{headerShown:false}} />
+        <Stack.Screen name="HelpSupportScreen" component={HelpSupportScreen} options={{headerShown:false}} />
+
+        {/* Common screens */}
+        <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
+        <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="ReportIncident" component={ReportIncident} />
-
-
-
       </Stack.Navigator>
     </NavigationContainer>
   );

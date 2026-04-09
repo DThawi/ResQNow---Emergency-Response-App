@@ -1,10 +1,2 @@
-import React from 'react';
-import { View, Text } from 'react-native';
-
-export default function SetPassword() {
-    return (
-        <View>
-            <Text>SetPassword</Text>
-        </View>
-    );
-}
+const VerifyIdentity = () => null;
+export default VerifyIdentity;

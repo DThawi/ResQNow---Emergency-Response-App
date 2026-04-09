@@ -15,6 +15,12 @@ export default function Register1({ navigation }) {
   };
 
   return (
+
+    <View style={styles.container}>
+      <Text style={styles.title}>Register Step 1</Text>
+
+     
+
     <View className="flex-1 bg-[#F5F5F5]">
       <Header title="Create Account" onClose={() => navigation.navigate('Login')} />
 
@@ -64,6 +70,7 @@ export default function Register1({ navigation }) {
           <Text className="text-white text-base font-bold">→  Continue</Text>
         </TouchableOpacity>
       </ScrollView>
+
     </View>
   );
 }
