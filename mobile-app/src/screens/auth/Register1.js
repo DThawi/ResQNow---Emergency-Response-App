@@ -72,5 +72,6 @@ export default function Register1({ navigation }) {
       </ScrollView>
 
     </View>
+    </View>
   );
 }
