@@ -14,6 +14,7 @@ import LogoutPopup from "../screens/auth/LogoutPopup";
 import PrivacyPolicy from "../CommonScreens/PrivacyPolicy";
 import HomeScreen from "../screens/auth/HomeScreen";
 import LiveMapScreen from "../screens/Citizen/LiveMapScreen";
+import AlertScreen from "../screens/Citizen/AlertScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +33,7 @@ export default function AppNavigator() {
         <Stack.Screen name="LogoutPopup" component={LogoutPopup} />
         <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
         <Stack.Screen name="Map"  component={LiveMapScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Alert" component={AlertScreen} options={{ headerShown: false }} />
 
         <Stack.Screen
           name="Home"
