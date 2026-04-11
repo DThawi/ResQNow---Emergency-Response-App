@@ -75,7 +75,7 @@ const HomeScreen = () => {
               }
               timeAgo={getTimeAgo(incident.timestamp)}
               verifications={0}
-              onPress={() => console.log("Card pressed", incident._id)}
+              onPress={() => navigation.navigate("IncidentDetails", { incident })}
             />
           ))
         )}

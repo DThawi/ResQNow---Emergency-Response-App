@@ -26,7 +26,7 @@ import ResponderAlertScreen from "../screens/Responder/ResponderAlertScreen";
 import PrivacySecuritySettings from "../screens/Citizen/PrivacySecuritySettings";
 import ReportIncident from "../screens/Citizen/ReportIncident";
 import MyReportsScreen from "../screens/Citizen/MyReportsScreen";
-
+import IncidentDetailsScreen from "../screens/Citizen/IncidentDetailsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -62,6 +62,7 @@ export default function AppNavigator() {
         <Stack.Screen name="PrivacySecuritySettings" component={PrivacySecuritySettings} options={{ headerShown: false }} />
         <Stack.Screen name="MyReports" component={MyReportsScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ReportIncident" component={ReportIncident} options={{ headerShown: false }} />
+        <Stack.Screen name="IncidentDetails" component={IncidentDetailsScreen} options={{ headerShown: false }} />
 
         {/* <Stack.Screen name="HelpSupportScreen" component={HelpSupportScreen} options={{headerShown:false}} /> */}
 
