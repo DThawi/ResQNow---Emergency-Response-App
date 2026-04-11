@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import GradientHeader from "./components/layout/header";
+import GradientHeader from "../../components/layout/header";
 
 const EditProfileScreen = () => {
   const [image, setImage] = useState(

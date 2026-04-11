@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 
-import BulletItem from "../components/symbols/bullets";
-import GradientHeader from "../components/layout/header";
+import BulletItem from "../../components/symbols/bullets";
+import GradientHeader from "../../components/layout/header";
 
 const TermsConditions = ({ navigation }) => {
   return (

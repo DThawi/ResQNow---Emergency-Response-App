@@ -52,9 +52,6 @@ export default function AppNavigator() {
         <Stack.Screen name="ResponderAlert" component={ResponderAlertScreen} options={{ headerShown: false }} /> 
 
 
-
-       
-       
         <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} options={{headerShown:false}}/>
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="TermsConditions" component={TermsConditions} options={{headerShown:false}}/>
