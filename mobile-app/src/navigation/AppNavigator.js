@@ -19,6 +19,7 @@ import HelpSupport from "../screens/Responder/HelpSupport";
 import ProfileScreen from "../screens/Citizen/ProfileScreen";
 import EditProfileScreen from "../screens/Citizen/EditProfileScreen";
 import NotificationSettings from "../screens/Citizen/NotificationSettingsScreen";
+import SettingsScreen from "../screens/Responder/Settings";
 // import HelpSupportScreen from "../HelpSupportScreen";
 import LiveMapScreen from "../screens/Citizen/LiveMapScreen";
 import AlertScreen from "../screens/Citizen/AlertScreen";
@@ -60,6 +61,7 @@ export default function AppNavigator() {
         <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} options={{ headerShown: false }} />
         <Stack.Screen name="NotificationSettings" component={NotificationSettings} options={{ headerShown: false }} />
         <Stack.Screen name="PrivacySecuritySettings" component={PrivacySecuritySettings} options={{ headerShown: false }} />
+        <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
         <Stack.Screen name="MyReports" component={MyReportsScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ReportIncident" component={ReportIncident} options={{ headerShown: false }} />
         <Stack.Screen name="IncidentDetails" component={IncidentDetailsScreen} options={{ headerShown: false }} />
