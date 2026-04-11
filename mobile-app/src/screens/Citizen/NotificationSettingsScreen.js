@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { View, Text, Switch, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import GradientHeader from "./components/layout/header";
-import CustomToggle from "./components/symbols/CustomeToggle";
+import GradientHeader from "../../components/layout/header";
+import CustomToggle from "../../components/symbols/CustomeToggle";
 
 
 const NotificationSettings = () => {

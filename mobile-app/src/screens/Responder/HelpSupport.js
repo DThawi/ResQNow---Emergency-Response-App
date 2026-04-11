@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
-import GradientHeader from "../components/layout/header";
+import GradientHeader from "../../components/layout/header";
 
 const FAQItem = ({ question, answer }) => {
   const [open, setOpen] = useState(false);
