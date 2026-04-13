@@ -25,6 +25,7 @@ import AccountSettingsScreen from "../screens/Responder/AccountSettingsScreen";
 import ResponderEditProfileScreen from "../screens/Responder/ResponderEditProfileScreen";
 import CredentialsCertificationsScreen from "../screens/Responder/CredentialsCertificationsScreen";
 import UploadVerificationDocuments from "../screens/Responder/UploadVerificationDocuments";
+import ChangePasswordScreen from "../screens/Responder/ChangePasswordScreen";
 // import HelpSupportScreen from "../HelpSupportScreen";
 import LiveMapScreen from "../screens/Citizen/LiveMapScreen";
 import AlertScreen from "../screens/Citizen/AlertScreen";
@@ -75,6 +76,7 @@ export default function AppNavigator() {
         <Stack.Screen name="ResponderEditProfileScreen" component={ResponderEditProfileScreen} options={{headerShown:false}} />
         <Stack.Screen name="CredentialsCertificationsScreen" component={CredentialsCertificationsScreen} options={{headerShown:false}} />
         <Stack.Screen name="UploadVerificationDocuments" component={UploadVerificationDocuments} options={{headerShown:false}} />
+        <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} options={{headerShown:false}} />
 
 
         <Stack.Screen name="MyReports" component={MyReportsScreen} options={{ headerShown: false }} />
