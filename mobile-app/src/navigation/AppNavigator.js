@@ -25,6 +25,7 @@ import AccountSettingsScreen from "../screens/Responder/AccountSettingsScreen";
 import ResponderEditProfileScreen from "../screens/Responder/ResponderEditProfileScreen";
 import CredentialsCertificationsScreen from "../screens/Responder/CredentialsCertificationsScreen";
 import UploadVerificationDocuments from "../screens/Responder/UploadVerificationDocuments";
+import ChangePasswordScreen from "../screens/Responder/ChangePasswordScreen";
 // import HelpSupportScreen from "../HelpSupportScreen";
 import LiveMapScreen from "../screens/Citizen/LiveMapScreen";
 import AlertScreen from "../screens/Citizen/AlertScreen";
