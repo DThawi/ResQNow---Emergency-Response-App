@@ -26,6 +26,9 @@ import ResponderEditProfileScreen from "../screens/Responder/ResponderEditProfil
 import CredentialsCertificationsScreen from "../screens/Responder/CredentialsCertificationsScreen";
 import UploadVerificationDocuments from "../screens/Responder/UploadVerificationDocuments";
 import ChangePasswordScreen from "../screens/Responder/ChangePasswordScreen";
+import BiometricAuthentication from "../screens/Responder/BiometricsAuthentication";
+import DeactivateAccountScreen from "../screens/Responder/DeactivateAccountScreen";  
+import DeleteAccountScreen from "../screens/Responder/DeleteAccountScreen";
 // import HelpSupportScreen from "../HelpSupportScreen";
 import LiveMapScreen from "../screens/Citizen/LiveMapScreen";
 import AlertScreen from "../screens/Citizen/AlertScreen";
@@ -44,7 +47,7 @@ export default function AppNavigator() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
 
-        {/* <Stack.Navigator initialRouteName="TestScreen" screenOptions={{ headerShown: false }}> */}
+        {/* <Stack.Navigator initialRouteName="TestScreen" screenOptions={{ headerShown: false }}>
         {/* Auth flow */}
         {/* <Stack.Screen name="TestScreen" component={TestScreen} options={{headerShown:false}} /> */}
         <Stack.Screen name="Splash" component={SplashScreen} />
@@ -76,6 +79,10 @@ export default function AppNavigator() {
         <Stack.Screen name="ResponderEditProfileScreen" component={ResponderEditProfileScreen} options={{ headerShown: false }} />
         <Stack.Screen name="CredentialsCertificationsScreen" component={CredentialsCertificationsScreen} options={{ headerShown: false }} />
         <Stack.Screen name="UploadVerificationDocuments" component={UploadVerificationDocuments} options={{ headerShown: false }} />
+        <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} options={{headerShown:false}} />
+        <Stack.Screen name="BiometricAuthentication" component={BiometricAuthentication} options={{headerShown:false}} />
+        <Stack.Screen name="DeactivateAccountScreen" component={DeactivateAccountScreen} options={{headerShown:false}} />
+        <Stack.Screen name="DeleteAccountScreen" component={DeleteAccountScreen} options={{headerShown:false}} />
 
 
         <Stack.Screen name="MyReports" component={MyReportsScreen} options={{ headerShown: false }} />
