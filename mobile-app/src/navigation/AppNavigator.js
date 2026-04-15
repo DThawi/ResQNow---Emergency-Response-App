@@ -29,6 +29,7 @@ import ChangePasswordScreen from "../screens/Responder/ChangePasswordScreen";
 import BiometricAuthentication from "../screens/Responder/BiometricsAuthentication";
 import DeactivateAccountScreen from "../screens/Responder/DeactivateAccountScreen";  
 import DeleteAccountScreen from "../screens/Responder/DeleteAccountScreen";
+import PrivacyPolicy_Citizen from "../screens/Citizen/PrivacyPolicy";
 // import HelpSupportScreen from "../HelpSupportScreen";
 import LiveMapScreen from "../screens/Citizen/LiveMapScreen";
 import AlertScreen from "../screens/Citizen/AlertScreen";
@@ -47,7 +48,7 @@ export default function AppNavigator() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
 
-        {/* <Stack.Navigator initialRouteName="TestScreen" screenOptions={{ headerShown: false }}>
+        {/* <Stack.Navigator initialRouteName="TestScreen" screenOptions={{ headerShown: false }}> */}
         {/* Auth flow */}
         {/* <Stack.Screen name="TestScreen" component={TestScreen} options={{headerShown:false}} /> */}
         <Stack.Screen name="Splash" component={SplashScreen} />
@@ -83,6 +84,7 @@ export default function AppNavigator() {
         <Stack.Screen name="BiometricAuthentication" component={BiometricAuthentication} options={{headerShown:false}} />
         <Stack.Screen name="DeactivateAccountScreen" component={DeactivateAccountScreen} options={{headerShown:false}} />
         <Stack.Screen name="DeleteAccountScreen" component={DeleteAccountScreen} options={{headerShown:false}} />
+        <Stack.Screen name="PrivacyPolicy_Citizen" component={PrivacyPolicy_Citizen} options={{ headerShown: false }} />
 
 
         <Stack.Screen name="MyReports" component={MyReportsScreen} options={{ headerShown: false }} />
