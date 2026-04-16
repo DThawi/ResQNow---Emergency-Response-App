@@ -15,7 +15,7 @@ import LogoutPopup from "../screens/auth/LogoutPopup";
 import PrivacyPolicy from "../screens/Responder/PrivacyPolicy";
 import HomeScreen from "../screens/auth/HomeScreen";
 import TermsConditions from "../screens/Responder/TermsConditions";
-import HelpSupport from "../screens/Responder/HelpSupport";
+import HelpSupport from "../screens/Citizen/HelpSupport";
 import ProfileScreen from "../screens/Citizen/ProfileScreen";
 import EditProfileScreen from "../screens/Citizen/EditProfileScreen";
 import NotificationSettings from "../screens/Citizen/NotificationSettingsScreen";
@@ -30,6 +30,7 @@ import BiometricAuthentication from "../screens/Responder/BiometricsAuthenticati
 import DeactivateAccountScreen from "../screens/Responder/DeactivateAccountScreen";  
 import DeleteAccountScreen from "../screens/Responder/DeleteAccountScreen";
 import PrivacyPolicy_Citizen from "../screens/Citizen/PrivacyPolicy";
+import TermsConditions_Citizen from "../screens/Citizen/TermsConditions";
 // import HelpSupportScreen from "../HelpSupportScreen";
 import LiveMapScreen from "../screens/Citizen/LiveMapScreen";
 import AlertScreen from "../screens/Citizen/AlertScreen";
@@ -85,6 +86,7 @@ export default function AppNavigator() {
         <Stack.Screen name="DeactivateAccountScreen" component={DeactivateAccountScreen} options={{headerShown:false}} />
         <Stack.Screen name="DeleteAccountScreen" component={DeleteAccountScreen} options={{headerShown:false}} />
         <Stack.Screen name="PrivacyPolicy_Citizen" component={PrivacyPolicy_Citizen} options={{ headerShown: false }} />
+        <Stack.Screen name="TermsConditions_Citizen" component={TermsConditions_Citizen} options={{ headerShown: false }} />
 
 
         <Stack.Screen name="MyReports" component={MyReportsScreen} options={{ headerShown: false }} />
