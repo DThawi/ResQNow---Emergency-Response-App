@@ -1,170 +1,169 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
-import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
-import GradientHeader from "../../components/layout/header";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  SafeAreaView,
+} from "react-native";
+import { Ionicons, Feather } from "@expo/vector-icons";
 
-const FAQItem = ({ question, answer }) => {
-  const [open, setOpen] = useState(false);
-
+const FAQItem = ({ question, answer, isOpen, onPress }) => {
   return (
-    <View className="border-b border-gray-200 py-3">
-      
-      {/* QUESTION ROW */}
+    <View className="mb-3">
       <TouchableOpacity
-        onPress={() => setOpen(!open)}
-        className="flex-row justify-between items-center"
+        onPress={onPress}
+        className="bg-white border border-gray-200 rounded-2xl px-5 py-4 flex-row justify-between items-center"
       >
-        <Text className="text-gray-700 flex-1 pr-2">
+        <Text className="text-[#2B2D42] text-[16px] font-semibold pr-3 flex-1">
           {question}
         </Text>
 
         <Ionicons
-          name={open ? "chevron-up" : "chevron-down"}
-          size={18}
-          color="gray"
+          name={isOpen ? "chevron-up" : "chevron-down"}
+          size={20}
+          color="#8D99AE"
         />
       </TouchableOpacity>
 
-      {/* ANSWER (only show when open) */}
-      {open && (
-        <Text className="text-gray-500 text-sm mt-2 leading-5">
-          {answer}
-        </Text>
+      {isOpen && (
+        <View className="bg-white border border-gray-200 border-t-0 rounded-b-2xl px-5 pb-5 pt-2">
+          <Text className="text-[#8D99AE] text-[15px] leading-7">
+            {answer}
+          </Text>
+        </View>
       )}
-
     </View>
   );
 };
 
-const HelpSupport = () => {
+export default function HelpSupport_Citizen() {
+  const [openIndex, setOpenIndex] = useState(1);
+
+  const faqData = [
+    {
+      question: "How do I update my profile information?",
+      answer:
+        "Go to Profile > Edit Profile. There you can update your name, phone number, email address, and other personal details. Tap Save after making changes.",
+    },
+    {
+      question: "Why is GPS location required?",
+      answer:
+        "GPS is essential for emergency coordination. It allows dispatchers to locate the nearest available responders and track response times. Your location is only shared during active incidents.",
+    },
+    {
+      question: "How do I reset my password?",
+      answer:
+        "Tap Forgot Password on the login screen. Enter your registered email address and follow the verification steps to create a new password.",
+    },
+    {
+      question: "Why am I not receiving notifications?",
+      answer:
+        "Please ensure notifications are enabled in both your phone settings and inside the ResQNow app. Also check your internet connection and battery optimization settings.",
+    },
+    {
+      question: "How do I change my availability status?",
+      answer:
+        "Responders can change their availability from the dashboard status section. Select Available, Busy, or Offline based on your current status.",
+    },
+  ];
+
+  const toggleFAQ = (index) => {
+    setOpenIndex(openIndex === index ? null : index);
+  };
+
   return (
-    <View className="flex-1 bg-gray-100">
-      
-      {/* Header */}
-      // <GradientHeader title="Help & Support" type="close" />
-
-      <ScrollView className="p-4">
-
-        {/* CONTACT US */}
-        <View className="bg-white rounded-2xl p-4 mb-4 shadow">
-          <Text className="font-semibold text-gray-800 mb-3">
-            Contact Us
+    <SafeAreaView className="flex-1 bg-[#F7F7F7]">
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 30 }}
+      >
+        {/* Header */}
+        <View className="px-6 pt-4 pb-5 flex-row justify-between items-center">
+          <Text className="text-[28px] font-bold text-[#2B2D42]">
+            Help & Support
           </Text>
 
-          {/* Live Chat */}
-          <View className="flex-row items-center mb-4">
-            <View className="bg-red-100 p-3 rounded-xl mr-3">
-              <Ionicons name="chatbubble-outline" size={18} color="red" />
-            </View>
-            <View>
-              <Text className="font-medium">Live Chat</Text>
-              <Text className="text-gray-400 text-sm">
-                Get instant help
-              </Text>
-            </View>
-          </View>
+          <TouchableOpacity>
+            <Ionicons name="close" size={26} color="#8D99AE" />
+          </TouchableOpacity>
+        </View>
 
-          {/* Call */}
-          <View className="flex-row items-center mb-4">
-            <View className="bg-gray-200 p-3 rounded-xl mr-3">
-              <Feather name="phone" size={18} color="gray" />
-            </View>
-            <View>
-              <Text className="font-medium">Call Support</Text>
-              <Text className="text-gray-400 text-sm">
-                1-800-RESQNOW
-              </Text>
-            </View>
-          </View>
+        {/* Contact Support */}
+        <View className="mx-6 bg-[#EFEFEF] rounded-3xl p-6">
+          <Text className="text-[#2B2D42] text-[28px] font-bold mb-6">
+            Contact Support
+          </Text>
 
           {/* Email */}
-          <View className="flex-row items-center">
-            <View className="bg-yellow-100 p-3 rounded-xl mr-3">
-              <MaterialIcons name="email" size={18} color="orange" />
-            </View>
-            <View>
-              <Text className="font-medium">Email Us</Text>
-              <Text className="text-gray-400 text-sm">
+          <View className="flex-row items-center mb-5">
+            <Feather name="mail" size={22} color="#0B4F6C" />
+            <View className="ml-4">
+              <Text className="text-[#8D99AE] text-sm">Email</Text>
+              <Text className="text-[#E53935] text-lg font-semibold">
                 support@resqnow.com
               </Text>
             </View>
           </View>
-        </View>
 
-        {/* RESOURCES */}
-        <View className="bg-white rounded-2xl p-4 mb-4 shadow">
-          <Text className="font-semibold text-gray-800 mb-3">
-            Resources
-          </Text>
-
-          <View className="flex-row items-center mb-4">
-            <View className="bg-green-100 p-3 rounded-xl mr-3">
-              <Feather name="video" size={18} color="green" />
-            </View>
-            <View>
-              <Text className="font-medium">Video Tutorials</Text>
-              <Text className="text-gray-400 text-sm">
-                Learn how to use ResQNow
+          {/* Phone */}
+          <View className="flex-row items-center mb-6">
+            <Feather name="phone" size={22} color="#2ECC71" />
+            <View className="ml-4">
+              <Text className="text-[#8D99AE] text-sm">24/7 Support</Text>
+              <Text className="text-[#E53935] text-lg font-semibold">
+                +94 (800) RESQ-NOW
               </Text>
             </View>
           </View>
 
-          <View className="flex-row items-center">
-            <View className="bg-gray-200 p-3 rounded-xl mr-3">
-              <Feather name="file-text" size={18} color="gray" />
-            </View>
-            <View>
-              <Text className="font-medium">User Guide</Text>
-              <Text className="text-gray-400 text-sm">
-                Complete documentation
+          {/* Buttons */}
+          <View className="flex-row justify-between">
+            <TouchableOpacity className="bg-[#E53935] rounded-2xl py-4 flex-1 mr-2 items-center">
+              <Text className="text-white text-[16px] font-semibold">
+                Emergency Hotline
               </Text>
-            </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity className="border border-[#E53935] rounded-2xl py-4 flex-1 ml-2 items-center">
+              <Text className="text-[#E53935] text-[16px] font-semibold">
+                Live Chat
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
 
         {/* FAQ */}
-        <View className="bg-white rounded-2xl p-4 mb-4 shadow">
-          <Text className="font-semibold text-gray-800 mb-3">
+        <View className="px-6 mt-10">
+          <Text className="text-[#2B2D42] text-[26px] font-bold mb-5">
             Frequently Asked Questions
           </Text>
 
-          <FAQItem question="How do I update my profile information?" answer="GPS helps responders locate incidents quickly and ensures accurate emergency response." />
-          <FAQItem question="Why is GPS location required?" answer="GPS location is required to ensure accurate and timely emergency response." />
-          <FAQItem question="How do I reset my password?" answer="You can reset your password by clicking on the 'Forgot Password' link on the login screen." />
-          <FAQItem question="Why am I not receiving notifications?" answer="Make sure your notification settings are enabled and your device is connected to the internet." />
-          <FAQItem question="How do I change my availability status?" answer="You can change your availability status from your profile settings." />
+          {faqData.map((item, index) => (
+            <FAQItem
+              key={index}
+              question={item.question}
+              answer={item.answer}
+              isOpen={openIndex === index}
+              onPress={() => toggleFAQ(index)}
+            />
+          ))}
         </View>
 
-        {/* BUTTON */}
-        <TouchableOpacity className="bg-red-600 p-4 rounded-2xl items-center mb-4">
-          <Text className="text-white font-semibold">
-            Submit a Support Request
-          </Text>
-        </TouchableOpacity>
-
-        {/* FOOTER */}
-        <View className="bg-white rounded-2xl p-6 items-center shadow">
-          <View className="w-16 h-16 bg-red-800 rounded-full mb-3" />
-
-          <Text className="font-semibold text-lg">ResQNow</Text>
-          <Text className="text-gray-400 text-sm mb-2">
-            Version 1.0.0
-          </Text>
-
-          <View className="flex-row">
-            <Text className="text-gray-400 text-xs">
-              Terms of Service
+        {/* Submit Request */}
+        <View className="px-6 mt-8">
+          <TouchableOpacity className="bg-[#E53935] rounded-2xl py-5 flex-row justify-center items-center">
+            <Feather name="mail" size={20} color="white" />
+            <Text className="text-white text-[18px] font-semibold ml-2">
+              Submit a Support Request
             </Text>
-            <Text className="mx-2 text-gray-400">•</Text>
-            <Text className="text-gray-400 text-xs">
-              Privacy Policy
-            </Text>
-          </View>
+          </TouchableOpacity>
+
+          <Text className="text-center text-[#8D99AE] text-sm mt-5 leading-5">
+            Average response time: 2-4 hours • Emergency issues prioritized
+          </Text>
         </View>
-
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
-};
-
-export default HelpSupport;
+}

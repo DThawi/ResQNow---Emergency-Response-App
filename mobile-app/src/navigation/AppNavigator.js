@@ -15,7 +15,7 @@ import LogoutPopup from "../screens/auth/LogoutPopup";
 import PrivacyPolicy from "../screens/Responder/PrivacyPolicy";
 import HomeScreen from "../screens/auth/HomeScreen";
 import TermsConditions from "../screens/Responder/TermsConditions";
-import HelpSupport from "../screens/Responder/HelpSupport";
+import HelpSupport from "../screens/Citizen/HelpSupport";
 import ProfileScreen from "../screens/Citizen/ProfileScreen";
 import EditProfileScreen from "../screens/Citizen/EditProfileScreen";
 import NotificationSettings from "../screens/Citizen/NotificationSettingsScreen";
@@ -26,7 +26,12 @@ import ResponderEditProfileScreen from "../screens/Responder/ResponderEditProfil
 import CredentialsCertificationsScreen from "../screens/Responder/CredentialsCertificationsScreen";
 import UploadVerificationDocuments from "../screens/Responder/UploadVerificationDocuments";
 import ChangePasswordScreen from "../screens/Responder/ChangePasswordScreen";
-// import HelpSupportScreen from "../HelpSupportScreen";
+import BiometricAuthentication from "../screens/Responder/BiometricsAuthentication";
+import DeactivateAccountScreen from "../screens/Responder/DeactivateAccountScreen";  
+import DeleteAccountScreen from "../screens/Responder/DeleteAccountScreen";
+import PrivacyPolicy_Citizen from "../screens/Citizen/PrivacyPolicy";
+import TermsConditions_Citizen from "../screens/Citizen/TermsConditions";
+import HelpSupport_Citizen from "../screens/Citizen/HelpSupport";
 import LiveMapScreen from "../screens/Citizen/LiveMapScreen";
 import AlertScreen from "../screens/Citizen/AlertScreen";
 import ResponderAlertScreen from "../screens/Responder/ResponderAlertScreen";
@@ -76,13 +81,20 @@ export default function AppNavigator() {
         <Stack.Screen name="ResponderEditProfileScreen" component={ResponderEditProfileScreen} options={{ headerShown: false }} />
         <Stack.Screen name="CredentialsCertificationsScreen" component={CredentialsCertificationsScreen} options={{ headerShown: false }} />
         <Stack.Screen name="UploadVerificationDocuments" component={UploadVerificationDocuments} options={{ headerShown: false }} />
+        <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} options={{headerShown:false}} />
+        <Stack.Screen name="BiometricAuthentication" component={BiometricAuthentication} options={{headerShown:false}} />
+        <Stack.Screen name="DeactivateAccountScreen" component={DeactivateAccountScreen} options={{headerShown:false}} />
+        <Stack.Screen name="DeleteAccountScreen" component={DeleteAccountScreen} options={{headerShown:false}} />
+        <Stack.Screen name="PrivacyPolicy_Citizen" component={PrivacyPolicy_Citizen} options={{ headerShown: false }} />
+        <Stack.Screen name="TermsConditions_Citizen" component={TermsConditions_Citizen} options={{ headerShown: false }} />
+        <Stack.Screen name="HelpSupport_Citizen" component={HelpSupport_Citizen} options={{headerShown:false}} />
 
 
         <Stack.Screen name="MyReports" component={MyReportsScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ReportIncident" component={ReportIncident} options={{ headerShown: false }} />
         <Stack.Screen name="IncidentDetails" component={IncidentDetailsScreen} options={{ headerShown: false }} />
 
-        {/* <Stack.Screen name="HelpSupportScreen" component={HelpSupportScreen} options={{headerShown:false}} /> */}
+        
 
 
       </Stack.Navigator>
