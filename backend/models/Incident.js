@@ -46,6 +46,16 @@ const IncidentSchema = new mongoose.Schema({
     ref: 'Incident',
     default: null
   },
+
+  verified_by: [{ 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User' 
+  }],
+
+  reported_inaccurate_by: [{ 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User' 
+  }],
 });
 
 IncidentSchema.index({ location: '2dsphere' });

@@ -144,3 +144,48 @@ exports.updateIncidentStatus = async (req, res) => {
     });
   }
 };
+
+// Add citizen feedback (verify or report inaccuracy)
+exports.addIncidentFeedback = async (req, res) => {
+  try {
+    const { feedback_type } = req.body;
+    const userId = req.user.id;
+
+    if (!['verify', 'inaccurate'].includes(feedback_type)) {
+      return res.status(400).json({ message: "Invalid feedback type. Must be 'verify' or 'inaccurate'." });
+    }
+
+    const incident = await Incident.findById(req.params.id);
+
+    if (!incident) {
+      return res.status(404).json({ message: "Incident not found" });
+    }
+
+    // Check if user already provided feedback
+    const hasVerified = incident.verified_by && incident.verified_by.includes(userId);
+    const hasReportedInaccurate = incident.reported_inaccurate_by && incident.reported_inaccurate_by.includes(userId);
+
+    if (hasVerified || hasReportedInaccurate) {
+      return res.status(400).json({ message: "You have already provided feedback for this incident." });
+    }
+
+    if (feedback_type === 'verify') {
+      incident.verified_by.push(userId);
+    } else if (feedback_type === 'inaccurate') {
+      incident.reported_inaccurate_by.push(userId);
+    }
+
+    await incident.save();
+
+    res.status(200).json({
+      message: "Feedback recorded successfully",
+      incident
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      message: "Error adding feedback",
+      error: err.message
+    });
+  }
+};
