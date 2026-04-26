@@ -27,7 +27,7 @@ import CredentialsCertificationsScreen from "../screens/Responder/CredentialsCer
 import UploadVerificationDocuments from "../screens/Responder/UploadVerificationDocuments";
 import ChangePasswordScreen from "../screens/Responder/ChangePasswordScreen";
 import BiometricAuthentication from "../screens/Responder/BiometricsAuthentication";
-import DeactivateAccountScreen from "../screens/Responder/DeactivateAccountScreen";  
+import DeactivateAccountScreen from "../screens/Responder/DeactivateAccountScreen";
 import DeleteAccountScreen from "../screens/Responder/DeleteAccountScreen";
 import PrivacyPolicy_Citizen from "../screens/Citizen/PrivacyPolicy";
 import TermsConditions_Citizen from "../screens/Citizen/TermsConditions";
@@ -40,7 +40,7 @@ import AlertScreen from "../screens/Citizen/AlertScreen";
 import ResponderAlertScreen from "../screens/Responder/ResponderAlertScreen";
 import DangerZones from "../screens/Citizen/DangerZones";
 import ReportIncident from "../screens/Citizen/ReportIncident";
-import TestScreen from "../screens/TestScreen";
+
 
 import MyReportsScreen from "../screens/Citizen/MyReportsScreen";
 import IncidentDetailsScreen from "../screens/Citizen/IncidentDetailsScreen";
@@ -52,9 +52,9 @@ export default function AppNavigator() {
     <NavigationContainer>
       {/* <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}> */}
 
-        <Stack.Navigator initialRouteName="TestScreen" screenOptions={{ headerShown: false }}>
+      <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
         {/* Auth flow */}
-        <Stack.Screen name="TestScreen" component={TestScreen} options={{headerShown:false}} />
+        {/* <Stack.Screen name="TestScreen" component={TestScreen} options={{ headerShown: false }} /> */}
         <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register1" component={Register1} />
@@ -84,13 +84,13 @@ export default function AppNavigator() {
         <Stack.Screen name="ResponderEditProfileScreen" component={ResponderEditProfileScreen} options={{ headerShown: false }} />
         <Stack.Screen name="CredentialsCertificationsScreen" component={CredentialsCertificationsScreen} options={{ headerShown: false }} />
         <Stack.Screen name="UploadVerificationDocuments" component={UploadVerificationDocuments} options={{ headerShown: false }} />
-        <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} options={{headerShown:false}} />
-        <Stack.Screen name="BiometricAuthentication" component={BiometricAuthentication} options={{headerShown:false}} />
-        <Stack.Screen name="DeactivateAccountScreen" component={DeactivateAccountScreen} options={{headerShown:false}} />
-        <Stack.Screen name="DeleteAccountScreen" component={DeleteAccountScreen} options={{headerShown:false}} />
+        <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="BiometricAuthentication" component={BiometricAuthentication} options={{ headerShown: false }} />
+        <Stack.Screen name="DeactivateAccountScreen" component={DeactivateAccountScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="DeleteAccountScreen" component={DeleteAccountScreen} options={{ headerShown: false }} />
         <Stack.Screen name="PrivacyPolicy_Citizen" component={PrivacyPolicy_Citizen} options={{ headerShown: false }} />
         <Stack.Screen name="TermsConditions_Citizen" component={TermsConditions_Citizen} options={{ headerShown: false }} />
-        <Stack.Screen name="HelpSupport_Citizen" component={HelpSupport_Citizen} options={{headerShown:false}} />
+        <Stack.Screen name="HelpSupport_Citizen" component={HelpSupport_Citizen} options={{ headerShown: false }} />
         <Stack.Screen name="OrganizationDetails_EditScreen" component={OrganizationDetails_EditScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ResponderAboutScreen" component={ResponderAboutScreen} options={{ headerShown: false }} />
         <Stack.Screen name="CitizenAboutScreen" component={CitizenAboutScreen} options={{ headerShown: false }} />
@@ -99,7 +99,7 @@ export default function AppNavigator() {
         <Stack.Screen name="ReportIncident" component={ReportIncident} options={{ headerShown: false }} />
         <Stack.Screen name="IncidentDetails" component={IncidentDetailsScreen} options={{ headerShown: false }} />
 
-        
+
 
 
       </Stack.Navigator>
