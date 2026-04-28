@@ -26,7 +26,7 @@ const HomeScreen = () => {
     fetchIncidents();
   }, []);
 
-  // Simple helper to format time ago strings
+  //  format time ago strings
   const getTimeAgo = (timestamp) => {
     if (!timestamp) return "Unknown time";
     const now = new Date();
@@ -74,7 +74,7 @@ const HomeScreen = () => {
                   : "Location Unknown"
               }
               timeAgo={getTimeAgo(incident.timestamp)}
-              verifications={0}
+              verifications={incident.verified_by ? incident.verified_by.length : 0}
               onPress={() => navigation.navigate("IncidentDetails", { incident })}
             />
           ))
