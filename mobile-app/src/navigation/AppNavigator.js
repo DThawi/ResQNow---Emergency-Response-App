@@ -25,9 +25,10 @@ import LiveMapScreen from "../screens/Citizen/LiveMapScreen";
 import AlertScreen from "../screens/Citizen/AlertScreen";
 import ResponderAlertScreen from "../screens/Responder/ResponderAlertScreen";
 import DangerZones from "../screens/Citizen/DangerZones";
+import DangerZoneDetails from "../screens/Citizen/DangerZoneDetails";
 import PrivacySecuritySettings from "../screens/Citizen/PrivacySecuritySettings";
 import ReportIncident from "../screens/Citizen/ReportIncident";
-// import TestScreen from "../screens/TestScreen";
+import TestScreen from "../screens/TestScreen";
 
 import MyReportsScreen from "../screens/Citizen/MyReportsScreen";
 import IncidentDetailsScreen from "../screens/Citizen/IncidentDetailsScreen";
@@ -37,9 +38,9 @@ const Stack = createNativeStackNavigator();
 export default function AppNavigator() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
+      
 
-        {/* <Stack.Navigator initialRouteName="TestScreen" screenOptions={{ headerShown: false }}> */}
+        <Stack.Navigator initialRouteName="TestScreen" screenOptions={{ headerShown: false }}> 
         {/* Auth flow */}
         {/* <Stack.Screen name="TestScreen" component={TestScreen} options={{headerShown:false}} /> */}
         <Stack.Screen name="Splash" component={SplashScreen} />
@@ -55,7 +56,7 @@ export default function AppNavigator() {
         <Stack.Screen name="Alert" component={AlertScreen} options={{ headerShown: false }} /> 
         <Stack.Screen name="ResponderAlert" component={ResponderAlertScreen} options={{ headerShown: false }} /> 
         <Stack.Screen name="DangerZones" component={DangerZones} options={{ headerShown: false }} />
-        
+        <Stack.Screen name="DangerZoneDetails" component={DangerZoneDetails} options={{ headerShown: false }} />
 
 
         <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} options={{ headerShown: false }} />
