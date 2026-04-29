@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,9 +6,11 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import API from "../../services/api";
 import GradientHeader from "../../components/layout/header";
@@ -21,31 +23,44 @@ const ProfileScreen = () => {
     all: 0,
     verified: 0,
     flagged: 0,
+    heroBadge: 0
   });
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchProfileData();
-  }, []);
+  // useFocusEffect ensures data refreshes every time when open this screen
+  useFocusEffect(
+    useCallback(() => {
+      fetchProfileData();
+    }, [])
+  );
 
   const fetchProfileData = async () => {
     try {
+      setLoading(true);
+      const token = await AsyncStorage.getItem('token');
+      
+      // Fetching profile and stats in parallel from actual endpoints
       const [profileRes, statsRes] = await Promise.all([
-        API.get("/users/profile"),
-        API.get("/users/profile-stats"),
+        API.get("/auth/profile", { headers: { Authorization: `Bearer ${token}` } }),
+        API.get("/auth/profile-stats", { headers: { Authorization: `Bearer ${token}` } }),
       ]);
 
       setUser(profileRes.data);
       setStats(statsRes.data);
     } catch (error) {
-      console.log("Profile Error:", error);
+      console.log("Profile Error:", error.response?.data || error.message);
+      // Fallback for user name/email if profile endpoint is pending
+      const storedName = await AsyncStorage.getItem('userName');
+      const storedEmail = await AsyncStorage.getItem('userEmail');
+      if (storedName) setUser({ name: storedName, email: storedEmail });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLogout = () => {
-    navigation.replace("LoginScreen");
+  const handleLogout = async () => {
+    await AsyncStorage.clear();
+    navigation.replace("Login");
   };
 
   if (loading) {
@@ -70,9 +85,7 @@ const ProfileScreen = () => {
           <View className="flex-row items-center">
             <Image
               source={{
-                uri:
-                  user?.profileImage ||
-                  "https://i.pravatar.cc/150?img=12",
+                uri: user?.profileImage || "https://i.pravatar.cc/150?img=12",
               }}
               className="w-28 h-28 rounded-full border-4 border-white"
             />
@@ -91,7 +104,7 @@ const ProfileScreen = () => {
           {/* Edit Button */}
           <TouchableOpacity
             className="mt-5 bg-red-600 py-4 rounded-2xl items-center"
-            onPress={() => navigation.navigate("EditProfile")}
+            onPress={() => navigation.navigate("EditProfileScreen")}
           >
             <Text className="text-white font-semibold text-base">
               Edit Profile
@@ -99,23 +112,23 @@ const ProfileScreen = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Performance Cards */}
+        {/* Performance Cards - Responsive Counts */}
         <View className="mx-4 mt-5 flex-row justify-between">
-          <PerformanceCard label="All" value={stats.all} />
+          <PerformanceCard label="All" value={stats.all || 0} />
           <PerformanceCard
             label="Verified"
-            value={stats.verified}
+            value={stats.verified || 0}
             valueColor="#FFA500"
           />
           <PerformanceCard
             label="Flagged"
-            value={stats.flagged}
+            value={stats.flagged || 0}
             valueColor="#D62828"
           />
           <PerformanceCard
             label="Hero"
             icon="medal-outline"
-            value="1"
+            value={stats.heroBadge || 0}
             valueColor="#2ECC71"
           />
         </View>
@@ -137,13 +150,13 @@ const ProfileScreen = () => {
           <MenuItem
             icon="shield-checkmark-outline"
             text="Privacy and Security"
-            onPress={() => navigation.navigate("SecuritySettings")}
+            onPress={() => navigation.navigate("PrivacySecuritySettings")}
           />
 
           <MenuItem
             icon="help-circle-outline"
             text="Help & Support"
-            onPress={() => navigation.navigate("HelpSupport")}
+            onPress={() => navigation.navigate("HelpSupport_Citizen")}
           />
         </View>
 
@@ -177,9 +190,7 @@ const ProfileScreen = () => {
   );
 };
 
-export default ProfileScreen;
-
-/* ---------- Components ---------- */
+/* ---------- Internal Components ---------- */
 
 const MenuItem = ({ icon, text, onPress }) => (
   <TouchableOpacity
@@ -227,8 +238,10 @@ const PerformanceCard = ({
       {value}
     </Text>
 
-    <Text className="text-gray-500 text-sm">
+    <Text className="text-gray-500 text-sm uppercase" style={{ fontSize: 9 }}>
       {label}
     </Text>
   </View>
 );
+
+export default ProfileScreen;
