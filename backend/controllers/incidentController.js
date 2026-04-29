@@ -41,7 +41,7 @@ if (existingCluster) {
     type: 'Point',
     coordinates: [parseFloat(longitude), parseFloat(latitude)]
   },
-  image: req.file ? req.file.path : null,
+  image: req.file ? req.file.cloudinaryUrl : null,
   cluster_id: clusterId
 });
 
@@ -95,43 +95,35 @@ exports.updateIncidentStatus = async (req, res) => {
 
     // DEFAULT: just update status
     let newStatus = status;
-    let assignedAuthority = null;
 
     // IF VERIFIED → FIND AUTHORITY
     if (status === "Verified") {
-  const incident = await Incident.findById(req.params.id);
+      // Find all authorities (organizations + responders) in that district
+      const authorities = await User.find({
+        role: "Authority",
+        location: {
+          $near: {
+            $geometry: {
+              type: "Point",
+              coordinates: incident.location.coordinates
+            },
+            $maxDistance: 10000 // 10km radius (adjust if needed)
+          }
+        }
+      }).limit(3);
 
-  // Find all authorities (organizations + responders) in that district
-  const authorities = await User.find({
-  role: "Authority",
-  location: {
-    $near: {
-      $geometry: {
-        type: "Point",
-        coordinates: incident.location.coordinates
-      },
-      $maxDistance: 10000 // 10km radius (adjust if needed)
+      console.log("FOUND AUTHORITIES:", authorities);
+
+      if (authorities.length > 0) {
+        incident.assignedAuthorities = authorities.map(a => a._id);
+        newStatus = "Assigned";
+      }
+      console.log("INCIDENT LOCATION:", incident.location.coordinates);
+      console.log("AUTHORITIES FOUND:", authorities.length);
     }
-  }
-}).limit(3);
-
-    console.log("FOUND AUTHORITIES:", authorities);
-
-  if (authorities.length > 0) {
-    incident.assignedAuthorities = authorities.map(a => a._id);
-    incident.status = "Assigned";
-  }
-    console.log("INCIDENT LOCATION:", incident.location.coordinates);
-    console.log("AUTHORITIES FOUND:", authorities.length);
-  await incident.save();
-}
 
     // UPDATE INCIDENT
     incident.status = newStatus;
-
-    if (assignedAuthority) {
-      incident.assignedAuthority = assignedAuthority;
-    }
 
     incident.status_history.push({
       status: newStatus,
@@ -148,6 +140,51 @@ exports.updateIncidentStatus = async (req, res) => {
   } catch (err) {
     res.status(500).json({
       message: "Error updating status",
+      error: err.message
+    });
+  }
+};
+
+// Add citizen feedback (verify or report inaccuracy)
+exports.addIncidentFeedback = async (req, res) => {
+  try {
+    const { feedback_type } = req.body;
+    const userId = req.user.id;
+
+    if (!['verify', 'inaccurate'].includes(feedback_type)) {
+      return res.status(400).json({ message: "Invalid feedback type. Must be 'verify' or 'inaccurate'." });
+    }
+
+    const incident = await Incident.findById(req.params.id);
+
+    if (!incident) {
+      return res.status(404).json({ message: "Incident not found" });
+    }
+
+    // Check if user already provided feedback
+    const hasVerified = incident.verified_by && incident.verified_by.includes(userId);
+    const hasReportedInaccurate = incident.reported_inaccurate_by && incident.reported_inaccurate_by.includes(userId);
+
+    if (hasVerified || hasReportedInaccurate) {
+      return res.status(400).json({ message: "You have already provided feedback for this incident." });
+    }
+
+    if (feedback_type === 'verify') {
+      incident.verified_by.push(userId);
+    } else if (feedback_type === 'inaccurate') {
+      incident.reported_inaccurate_by.push(userId);
+    }
+
+    await incident.save();
+
+    res.status(200).json({
+      message: "Feedback recorded successfully",
+      incident
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      message: "Error adding feedback",
       error: err.message
     });
   }

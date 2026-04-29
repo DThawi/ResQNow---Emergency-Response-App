@@ -28,6 +28,12 @@ router.put(
   incidentController.updateIncidentStatus
 );
 
+router.post(
+  '/:id/feedback',
+  verifyToken,
+  incidentController.addIncidentFeedback
+);
+
 router.get('/clusters', async (req, res) => {
   try {
     const clusters = await Incident.aggregate([

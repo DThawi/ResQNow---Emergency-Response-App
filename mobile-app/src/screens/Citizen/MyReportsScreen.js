@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, ScrollView, SafeAreaView, Platform, StatusBar } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, ScrollView, SafeAreaView, Platform, } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import ReportCard from '../../components/cards/ReportCard';
@@ -67,7 +67,6 @@ const MyReportsScreen = ({ navigation }) => {
 
   return (
     <View className="flex-1 bg-[#F7F7F7]">
-      <StatusBar barStyle="light-content" backgroundColor="#D62828" />
 
       {/* Dynamic Header */}
       <LinearGradient

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, Text, View, ActivityIndicator, TouchableOpacity, StatusBar } from 'react-native';
+import { ScrollView, Text, View, ActivityIndicator, TouchableOpacity } from 'react-native';
 import IncidentCard from '../../components/cards/incidentCards';
 import API from '../../services/api';
 import HomeHeader from '../../components/HomeHeader';
@@ -26,7 +26,7 @@ const HomeScreen = () => {
     fetchIncidents();
   }, []);
 
-  // Simple helper to format time ago strings
+  //  format time ago strings
   const getTimeAgo = (timestamp) => {
     if (!timestamp) return "Unknown time";
     const now = new Date();
@@ -49,7 +49,7 @@ const HomeScreen = () => {
 
   return (
     <View className="flex-1 bg-white">
-      {/* <StatusBar barStyle="light-content" backgroundColor="#D62828" /> */}
+
       <HomeHeader />
       <TouchableOpacity className="bg-[#D62828] h-[50px] rounded-[10px] flex-row justify-center items-center m-5"
         onPress={() => navigation.navigate('ReportIncident')}>
@@ -74,7 +74,8 @@ const HomeScreen = () => {
                   : "Location Unknown"
               }
               timeAgo={getTimeAgo(incident.timestamp)}
-              verifications={0}
+              verifications={incident.verified_by ? incident.verified_by.length : 0}
+              reports={incident.reported_inaccurate_by ? incident.reported_inaccurate_by.length : 0}
               onPress={() => navigation.navigate("IncidentDetails", { incident })}
             />
           ))
