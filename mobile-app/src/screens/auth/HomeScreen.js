@@ -1,7 +1,5 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ScrollView, Text, View, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import IncidentCard from '../../components/cards/incidentCards';
 import API from '../../services/api';
 import HomeHeader from '../../components/HomeHeader';
@@ -83,8 +81,8 @@ const HomeScreen = () => {
               description={incident.description}
               location={incident.location?.coordinates ? `Lng: ${incident.location.coordinates[0].toFixed(2)}, Lat: ${incident.location.coordinates[1].toFixed(2)}` : "Unknown"}
               timeAgo={getTimeAgo(incident.timestamp)}
-              verifications={incident.verified_by?.length || 0}
-              reports={incident.reported_inaccurate_by?.length || 0}
+              verifications={incident.verified_by ? incident.verified_by.length : 0}
+              reports={incident.reported_inaccurate_by ? incident.reported_inaccurate_by.length : 0}
               onPress={() => navigation.navigate("IncidentDetails", { incident })}
             />
           ))

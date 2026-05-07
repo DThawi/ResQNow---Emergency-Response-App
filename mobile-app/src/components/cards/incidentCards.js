@@ -2,20 +2,28 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons, Feather, Ionicons } from '@expo/vector-icons';
 
-const IncidentCard = ({ 
-  type = "Emergency", 
-  status = "New Report", 
-  description, 
-  location, 
-  timeAgo, 
-  verifications = 0, 
-  onPress 
+const IncidentCard = ({
+  type = "Emergency",
+  status = "New Report",
+  description,
+  location,
+  timeAgo,
+  verifications = 0,
+  reports = 0,
+  onPress
 }) => {
   return (
-    <TouchableOpacity 
-      style={styles.card} 
-      onPress={onPress} 
-      activeOpacity={0.9}
+    <TouchableOpacity
+      className="bg-white rounded-[20px] p-5 mb-4 border border-slate-100"
+      onPress={onPress}
+      activeOpacity={0.7}
+      style={{
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.05,
+        shadowRadius: 12,
+        elevation: 4,
+      }}
     >
       {/* Header Row: Icon, Title, and Status Badge */}
       <View style={styles.headerRow}>
@@ -45,11 +53,18 @@ const IncidentCard = ({
         </View>
       </View>
 
-      {/* Bottom Row: Verifications */}
-      <View style={styles.verificationRow}>
-        <Ionicons name="people-outline" size={18} color="#10B981" />
-        <Text style={styles.verificationText}>{verifications} verifications</Text>
+      {/* 4. Footer: Verification Counter */}
+      <View className="flex-row justify-between gap-2 pt-[15px] border-t border-slate-100">
+        <View className='flex-row items-center'>
+          <Ionicons name="people-outline" size={20} color="#10B981" />
+          <Text className="text-[15px] text-slate-800 font-medium">{verifications} verifications</Text>
+        </View>
+        <View className="flex-row items-center ">
+          <Ionicons name="alert-circle" size={20} color="#D10000" />
+          <Text className="text-[15px] text-slate-800 font-medium">{reports} rejections</Text>
+        </View>
       </View>
+
     </TouchableOpacity>
   );
 };

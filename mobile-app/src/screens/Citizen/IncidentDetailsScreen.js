@@ -95,17 +95,17 @@ const IncidentDetailsScreen = () => {
           <Text className="text-[#8D99AE] text-sm leading-[22px]">{incident.description}</Text>
         </View>
 
-        {/* Community Verification Box */}
+        {/* Community Feedback Box */}
         <View className="bg-[#F7F7F7] px-5 py-6">
           <View className="bg-white rounded-3xl p-5 shadow-sm">
             <View className="flex-row justify-between items-center mb-5">
-              <Text className="text-[#2B2D42] text-[17px] font-bold">Community Verification</Text>
+              <Text className="text-[#2B2D42] text-[17px] font-bold">Community Feedback</Text>
               <View className="flex-row gap-2">
                 <View className="bg-[#E8F8F5] px-2.5 py-1 rounded-md">
                   <Text className="text-[#2ECC71] text-xs font-bold">{incident.verified_by?.length || 0} Verified</Text>
                 </View>
                 <View className="bg-[#FDE8E8] px-2.5 py-1 rounded-md">
-                  <Text className="text-[#D62828] text-xs font-bold">{incident.reported_inaccurate_by?.length || 0} Rejected</Text>
+                  <Text className="text-[#E74C3C] text-xs font-bold">{incident.reported_inaccurate_by?.length || 0} Rejected</Text>
                 </View>
               </View>
             </View>
@@ -127,7 +127,7 @@ const IncidentDetailsScreen = () => {
                     return (
                       <View key={uid + index} className="flex-row items-center justify-between bg-[#F7F7F7] py-2 px-3 rounded-2xl border border-[#F0F0F0]">
                         <View className="flex-row items-center gap-3">
-                          <View className={`w-10 h-10 rounded-full ${isVerify ? 'bg-[#2ECC71]' : 'bg-[#D62828]'} items-center justify-center`}>
+                          <View className={`w-10 h-10 rounded-full ${isVerify ? 'bg-[#2ECC71]' : 'bg-[#E74C3C]'} items-center justify-center`}>
                             <Text className="text-white font-bold">{uid.slice(-2).toUpperCase()}</Text>
                           </View>
                           <View>
@@ -138,7 +138,7 @@ const IncidentDetailsScreen = () => {
                         <Ionicons 
                           name={isVerify ? "checkmark-circle-outline" : "close-circle-outline"} 
                           size={24} 
-                          color={isVerify ? "#2ECC71" : "#D62828"} 
+                          color={isVerify ? "#2ECC71" : "#E74C3C"} 
                         />
                       </View>
                     );
