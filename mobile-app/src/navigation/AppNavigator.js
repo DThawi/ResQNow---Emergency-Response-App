@@ -42,7 +42,7 @@ import DangerZones from "../screens/Citizen/DangerZones";
 import DangerZoneDetails from "../screens/Citizen/DangerZoneDetails";
 import ReportIncident from "../screens/Citizen/ReportIncident";
 
-import TestScreen from "../screens/TestScreen";
+
 
 import ResponderLiveMapScreen from "../screens/Responder/ResponderLiveMapScreen";
 
@@ -57,16 +57,16 @@ export default function AppNavigator() {
   return (
     <NavigationContainer>
 
-      <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
+
 
       {/*<Stack.Navigator initialRouteName="TestScreen" screenOptions={{ headerShown: false }}>*/}
-        {/* Auth flow */}
+      {/* Auth flow */}
       {/*<Stack.Screen name="TestScreen" component={TestScreen} options={{ headerShown: false }} />*/}
 
-      
+
       <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
-      
-     
+
+
         {/* Auth flow */}
         {/*<Stack.Screen name="TestScreen" component={TestScreen} options={{ headerShown: false }} />*/}
 
