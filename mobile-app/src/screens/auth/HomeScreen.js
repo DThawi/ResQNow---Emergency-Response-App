@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, Text, View, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { ScrollView, Text, View, ActivityIndicator, TouchableOpacity, RefreshControl } from 'react-native';
 import IncidentCard from '../../components/cards/incidentCards';
 import API from '../../services/api';
 import HomeHeader from '../../components/HomeHeader';
@@ -9,22 +9,28 @@ const HomeScreen = () => {
   const navigation = useNavigation();
   const [incidents, setIncidents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchIncidents = async () => {
+    try {
+      const response = await API.get('/incidents');
+      setIncidents(response.data);
+    } catch (error) {
+      console.error("Error fetching incidents:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-
-    const fetchIncidents = async () => {
-      try {
-        const response = await API.get('/incidents');
-        setIncidents(response.data);
-      } catch (error) {
-        console.error("Error fetching incidents:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchIncidents();
   }, []);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchIncidents();
+    setRefreshing(false);
+  };
 
   //  format time ago strings
   const getTimeAgo = (timestamp) => {
@@ -56,7 +62,13 @@ const HomeScreen = () => {
         <Text className="text-white font-bold text-lg">Request Emergency help</Text>
       </TouchableOpacity>
       <Text className="text-[20px] font-bold my-2 ml-5">Recent Incidents</Text>
-      <ScrollView className="flex-1" contentContainerStyle={{ padding: 16 }}>
+      <ScrollView 
+        className="flex-1" 
+        contentContainerStyle={{ padding: 16 }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#D32F2F"]} />
+        }
+      >
 
 
         {incidents.length === 0 ? (
