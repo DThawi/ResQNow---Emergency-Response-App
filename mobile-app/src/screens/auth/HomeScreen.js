@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { ScrollView, Text, View, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { ScrollView, Text, View, ActivityIndicator, TouchableOpacity, RefreshControl } from 'react-native';
 // --- THESE TWO LINES WERE MISSING ---
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -13,10 +13,11 @@ const HomeScreen = () => {
   const [incidents, setIncidents] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const fetchIncidents = async () => {
+  const fetchIncidents = async (isRefresh = false) => {
     try {
-      setLoading(true);
+      if (!isRefresh) setLoading(true);
       const [response, storedViewed] = await Promise.all([
         API.get('/incidents'),
         AsyncStorage.getItem('viewedIncidentIds')
@@ -33,9 +34,15 @@ const HomeScreen = () => {
     } catch (error) {
       console.error("Error fetching incidents:", error);
     } finally {
-      setLoading(false);
+      if (!isRefresh) setLoading(false);
     }
   };
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchIncidents(true);
+    setRefreshing(false);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -73,7 +80,18 @@ const HomeScreen = () => {
       
       <Text className="text-[20px] font-bold my-2 ml-5">Recent Incidents</Text>
       
-      <ScrollView className="flex-1" contentContainerStyle={{ padding: 16 }}>
+      <ScrollView 
+        className="flex-1" 
+        contentContainerStyle={{ padding: 16 }}
+        refreshControl={
+          <RefreshControl 
+            refreshing={refreshing} 
+            onRefresh={onRefresh} 
+            tintColor="#D62828" 
+            colors={["#D62828"]} 
+          />
+        }
+      >
         {incidents.length === 0 ? (
           <Text className="text-slate-500 text-center mt-5">No incidents found.</Text>
         ) : (
