@@ -45,7 +45,7 @@ import ReportIncident from "../screens/Citizen/ReportIncident";
 
 
 import ResponderLiveMapScreen from "../screens/Responder/ResponderLiveMapScreen";
-
+//import TestScreen from "../screens/TestScreen";
 
 
 import MyReportsScreen from "../screens/Citizen/MyReportsScreen";
@@ -60,8 +60,6 @@ export default function AppNavigator() {
 
 
       {/*<Stack.Navigator initialRouteName="TestScreen" screenOptions={{ headerShown: false }}>*/}
-      {/* Auth flow */}
-      {/*<Stack.Screen name="TestScreen" component={TestScreen} options={{ headerShown: false }} />*/}
 
 
       <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
