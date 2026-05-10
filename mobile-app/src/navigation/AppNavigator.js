@@ -45,11 +45,12 @@ import ReportIncident from "../screens/Citizen/ReportIncident";
 
 
 import ResponderLiveMapScreen from "../screens/Responder/ResponderLiveMapScreen";
-import TestScreen from "../screens/TestScreen";
+
 
 
 import MyReportsScreen from "../screens/Citizen/MyReportsScreen";
 import IncidentDetailsScreen from "../screens/Citizen/IncidentDetailsScreen";
+import ResponderIncidentDetailsScreen from "../screens/Responder/IncidentDetailsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -59,7 +60,7 @@ export default function AppNavigator() {
 
       {/*<Stack.Navigator initialRouteName="TestScreen" screenOptions={{ headerShown: false }}>*/}
 
-      <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}> 
+      <Stack.Navigator initialRouteName="ResponderIncidentDetails" screenOptions={{ headerShown: false }}>
 
         {/* Auth flow */}
         {/* <Stack.Screen name="TestScreen" component={TestScreen} options={{ headerShown: false }} /> */}
@@ -110,6 +111,7 @@ export default function AppNavigator() {
         <Stack.Screen name="ReportIncident" component={ReportIncident} options={{ headerShown: false }} />
         <Stack.Screen name="IncidentDetails" component={IncidentDetailsScreen} options={{ headerShown: false }} />
 
+        <Stack.Screen name="ResponderIncidentDetails" component={ResponderIncidentDetailsScreen} options={{ headerShown: false }} />
 
 
 
