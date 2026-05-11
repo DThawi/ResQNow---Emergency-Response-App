@@ -1,86 +1,139 @@
-import React, { useState, useEffect } from 'react';
-import { ScrollView, Text, View, ActivityIndicator, TouchableOpacity } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { FlatList, Text, View, ActivityIndicator, TouchableOpacity, RefreshControl } from 'react-native';
+// --- THESE TWO LINES WERE MISSING ---
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import IncidentCard from '../../components/cards/incidentCards';
 import API from '../../services/api';
 import HomeHeader from '../../components/HomeHeader';
-import { useNavigation } from '@react-navigation/native';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
   const [incidents, setIncidents] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
 
-  useEffect(() => {
+  const fetchIncidents = async (pageNumber = 1, isRefresh = false) => {
+    try {
+      if (pageNumber === 1 && !isRefresh) setLoading(true);
+      if (pageNumber > 1) setLoadingMore(true);
 
-    const fetchIncidents = async () => {
-      try {
-        const response = await API.get('/incidents');
-        setIncidents(response.data);
-      } catch (error) {
-        console.error("Error fetching incidents:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      const limit = 10;
+      const [response, storedViewed] = await Promise.all([
+        API.get(`/incidents?page=${pageNumber}&limit=${limit}`),
+        AsyncStorage.getItem('viewedIncidentIds')
+      ]);
+      
+      const incidentsData = response.data;
+      const viewedIds = storedViewed ? JSON.parse(storedViewed) : [];
+      
+      setHasMore(incidentsData.length === limit);
 
-    fetchIncidents();
+      setIncidents(prevIncidents => {
+        const newData = pageNumber === 1 ? incidentsData : [...prevIncidents, ...incidentsData];
+        // Calculate unread based on the currently loaded data
+        const unread = newData.filter(i => !viewedIds.includes(i._id)).length;
+        setUnreadCount(unread);
+        return newData;
+      });
+      setPage(pageNumber);
+    } catch (error) {
+      console.error("Error fetching incidents:", error);
+    } finally {
+      if (!isRefresh) setLoading(false);
+      setLoadingMore(false);
+    }
+  };
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchIncidents(1, true);
+    setRefreshing(false);
   }, []);
 
-  //  format time ago strings
-  const getTimeAgo = (timestamp) => {
-    if (!timestamp) return "Unknown time";
-    const now = new Date();
-    const past = new Date(timestamp);
-    const diffInMins = Math.floor((now - past) / 60000);
+  const loadMore = () => {
+    if (!loadingMore && hasMore) {
+      fetchIncidents(page + 1);
+    }
+  };
 
-    if (diffInMins < 60) return `${diffInMins}m ago`;
-    const diffInHours = Math.floor(diffInMins / 60);
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    return `${Math.floor(diffInHours / 24)}d ago`;
+  useFocusEffect(
+    useCallback(() => {
+      fetchIncidents(1);
+    }, [])
+  );
+
+  const getTimeAgo = (timestamp) => {
+    if (!timestamp) return "Just now";
+    const diff = Math.floor((new Date() - new Date(timestamp)) / 60000);
+    if (diff < 60) return `${diff}m ago`;
+    if (diff < 1440) return `${Math.floor(diff / 60)}h ago`;
+    return `${Math.floor(diff / 1440)}d ago`;
   };
 
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center bg-white">
-        <ActivityIndicator size="large" color="#D32F2F" />
+        <ActivityIndicator size="large" color="#D62828" />
       </View>
     );
   }
 
   return (
     <View className="flex-1 bg-white">
-
-      <HomeHeader />
-      <TouchableOpacity className="bg-[#D62828] h-[50px] rounded-[10px] flex-row justify-center items-center m-5"
-        onPress={() => navigation.navigate('ReportIncident')}>
+      {/* Pass the dynamic count to the Header */}
+      <HomeHeader unreadCount={unreadCount} />
+      
+      <TouchableOpacity 
+        className="bg-[#D62828] h-[50px] rounded-[10px] flex-row justify-center items-center m-5"
+        onPress={() => navigation.navigate('ReportIncident')}
+      >
         <Text className="text-white font-bold text-lg">Request Emergency help</Text>
       </TouchableOpacity>
+      
       <Text className="text-[20px] font-bold my-2 ml-5">Recent Incidents</Text>
-      <ScrollView className="flex-1" contentContainerStyle={{ padding: 16 }}>
-
-
-        {incidents.length === 0 ? (
-          <Text className="text-slate-500 text-center mt-5">No incidents found.</Text>
-        ) : (
-          incidents.map((incident) => (
+      
+      {incidents.length === 0 && !loading ? (
+        <Text className="text-slate-500 text-center mt-5">No incidents found.</Text>
+      ) : (
+        <FlatList
+          data={incidents}
+          keyExtractor={(item) => item._id}
+          contentContainerStyle={{ padding: 16 }}
+          renderItem={({ item: incident }) => (
             <IncidentCard
-              key={incident._id}
-              type={incident.type || "Emergency"}
-              status={incident.status || "Pending"}
+              type={incident.type}
+              status={incident.status}
               description={incident.description}
-              location={
-                incident.location?.coordinates
-                  ? `Lng: ${incident.location.coordinates[0].toFixed(2)}, Lat: ${incident.location.coordinates[1].toFixed(2)}`
-                  : "Location Unknown"
-              }
+              location={incident.location?.coordinates ? `Lng: ${incident.location.coordinates[0].toFixed(2)}, Lat: ${incident.location.coordinates[1].toFixed(2)}` : "Unknown"}
               timeAgo={getTimeAgo(incident.timestamp)}
               verifications={incident.verified_by ? incident.verified_by.length : 0}
               reports={incident.reported_inaccurate_by ? incident.reported_inaccurate_by.length : 0}
               onPress={() => navigation.navigate("IncidentDetails", { incident })}
             />
-          ))
-        )}
-      </ScrollView>
+          )}
+          refreshControl={
+            <RefreshControl 
+              refreshing={refreshing} 
+              onRefresh={onRefresh} 
+              tintColor="#D62828" 
+              colors={["#D62828"]} 
+            />
+          }
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            loadingMore ? (
+              <ActivityIndicator size="small" color="#D62828" style={{ marginVertical: 16 }} />
+            ) : null
+          }
+        />
+      )}
     </View>
   );
 };
