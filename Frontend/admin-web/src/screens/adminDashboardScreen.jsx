@@ -23,7 +23,8 @@ const AdminDashboardScreen = () => {
     { key: 'Medical', label: 'Medical', value: 24, color: '#10B981' },
   ]), []);
 
-  const [activeIncidentsCount, setActiveIncidentsCount] = useState(4); // Default fallback
+  const [activeIncidentsCount, setActiveIncidentsCount] = useState(4);
+  const [activeRespondersCount, setActiveRespondersCount] = useState(5);
 
   useEffect(() => {
     const fetchActiveIncidents = async () => {
@@ -46,8 +47,27 @@ const AdminDashboardScreen = () => {
       }
     };
 
+    const fetchActiveResponders = async () => {
+      try {
+        const token = localStorage.getItem('token') || '';
+        const response = await fetch('http://localhost:5000/api/analytics/active-responders', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setActiveRespondersCount(data.count);
+        }
+      } catch (err) {
+        console.error("Failed to fetch active responders:", err);
+      }
+    };
+
     fetchActiveIncidents();
+    fetchActiveResponders();
   }, []);
+
 
   return (
     <div className="animate-[fadeIn_0.3s_ease-out]">
@@ -59,7 +79,7 @@ const AdminDashboardScreen = () => {
       {/* Statistics Cards */}
       <div className="grid grid-cols-4 gap-[20px] mb-[25px]">
         <StatCard icon={<AlertCircle color="#D62828" size={24} />} bg="#FEE2E2" title="Active Incidents" value={activeIncidentsCount} trend="+12%" positive={false} />
-        <StatCard icon={<Users color="#4A5568" size={24} />} bg="#F3F4F6" title="Active Responders" value="128" trend="+8%" positive={true} />
+        <StatCard icon={<Users color="#4A5568" size={24} />} bg="#F3F4F6" title="Active Responders" value={activeRespondersCount} trend="+8%" positive={true} />
         <StatCard icon={<CheckCircle color="#10B981" size={24} />} bg="#D1FAE5" title="Resolved Today" value="42" trend="+18%" positive={true} />
         <StatCard icon={<Clock color="#F59E0B" size={24} />} bg="#FEF3C7" title="Avg. Dispatch Time" value="1.2 min" trend="-15%" positive={true} />
       </div>
