@@ -25,6 +25,7 @@ const AdminDashboardScreen = () => {
 
   const [activeIncidentsCount, setActiveIncidentsCount] = useState(4);
   const [activeRespondersCount, setActiveRespondersCount] = useState(5);
+  const [recentIncidents, setRecentIncidents] = useState([]);
 
   useEffect(() => {
     const fetchActiveIncidents = async () => {
@@ -64,8 +65,26 @@ const AdminDashboardScreen = () => {
       }
     };
 
+    const fetchRecentIncidents = async () => {
+      try {
+        const token = localStorage.getItem('token') || '';
+        const response = await fetch('http://localhost:5000/api/incidents?limit=5', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setRecentIncidents(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch recent incidents:", err);
+      }
+    };
+
     fetchActiveIncidents();
     fetchActiveResponders();
+    fetchRecentIncidents();
   }, []);
 
 
@@ -160,10 +179,15 @@ const AdminDashboardScreen = () => {
               </tr>
             </thead>
             <tbody>
-              <TableRow id="#1042" title="Building Fire" status="in-progress" loc="123 Main Street" />
-              <TableRow id="#1041" title="Medical Emergency" status="assigned" loc="456 Park Avenue" />
-              <TableRow id="#1040" title="Car Accident" status="verified" loc="I-95 Exit 12" />
-              <TableRow id="#1039" title="Robbery in Progress" status="reported" loc="789 Broadway" />
+              {recentIncidents.map(incident => (
+                <TableRow 
+                  key={incident._id} 
+                  id={`#${incident._id.substring(incident._id.length - 4)}`} 
+                  title={incident.type} 
+                  status={incident.status} 
+                  loc={incident.location?.coordinates ? `Lat: ${incident.location.coordinates[1].toFixed(2)}, Lng: ${incident.location.coordinates[0].toFixed(2)}` : 'Unknown'} 
+                />
+              ))}
             </tbody>
           </table>
         </div>
@@ -246,8 +270,12 @@ const TableRow = ({ id, title, status, loc }) => {
     'assigned': { bg: '#F3E8FF', text: '#6B21A8' },
     'verified': { bg: '#FEF08A', text: '#854D0E' },
     'reported': { bg: '#F3F4F6', text: '#374151' },
+    'Pending': { bg: '#F3F4F6', text: '#374151' },
+    'Verified': { bg: '#FEF08A', text: '#854D0E' },
+    'Assigned': { bg: '#F3E8FF', text: '#6B21A8' },
+    'Resolved': { bg: '#D1FAE5', text: '#065F46' },
   };
-  const badge = statusStyles[status];
+  const badge = statusStyles[status] || { bg: '#F3F4F6', text: '#374151' };
 
   return (
     <tr className="border-b border-[#F3F4F6] hover:bg-slate-50 transition-colors">
