@@ -162,4 +162,3 @@ exports.getResponseProgress = async (req, res) => {
     });
   }
 };
-
