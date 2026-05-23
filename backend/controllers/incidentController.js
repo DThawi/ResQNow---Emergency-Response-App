@@ -214,3 +214,37 @@ exports.getResponseProgress = async (req, res) => {
     });
   }
 };
+
+exports.adminVerifyIncident = async (req, res) => {
+  try {
+    const incident = await Incident.findById(req.params.id);
+    if (!incident) return res.status(404).json({ message: "Incident not found" });
+ 
+    incident.status = 'Verified';
+    incident.status_history.push({
+      status: 'Verified',
+      changed_by: req.user.id,
+    });
+ 
+    await incident.save();
+    await notifyStatusChange(incident);
+ 
+    res.status(200).json({ message: "Incident verified", incident });
+  } catch (err) {
+    res.status(500).json({ message: "Error verifying incident", error: err.message });
+  }
+};
+ 
+// Admin rejects (deletes) an incident as spam
+exports.adminRejectIncident = async (req, res) => {
+  try {
+    const incident = await Incident.findById(req.params.id);
+    if (!incident) return res.status(404).json({ message: "Incident not found" });
+ 
+    await Incident.findByIdAndDelete(req.params.id);
+ 
+    res.status(200).json({ message: "Incident rejected and removed" });
+  } catch (err) {
+    res.status(500).json({ message: "Error rejecting incident", error: err.message });
+  }
+};
