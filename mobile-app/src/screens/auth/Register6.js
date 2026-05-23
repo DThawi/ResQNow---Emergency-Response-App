@@ -4,148 +4,228 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
-  StyleSheet,
-  Platform,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
-import { Ionicons, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
+import { Ionicons, Feather } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
-import GradientHeader from '../../components/layout/header';
+import Header from '../../components/layout/header';
 import API from '../../services/api';
 
-const UploadBox = ({ file, onPress }) => (
-  <TouchableOpacity style={styles.uploadBox} onPress={onPress} activeOpacity={0.7}>
-    <Feather name="upload" size={24} color="#D4A017" />
-    {file ? (
-      <Text style={styles.uploadedFileName} numberOfLines={1}>{file.name}</Text>
-    ) : (
-      <>
-        <Text style={styles.uploadText}>Click to upload or drag and drop</Text>
-        <Text style={styles.uploadHint}>PNG, JPG, PDF (max. 10MB)</Text>
-      </>
+// ── Single upload field ───────────────────────────────────────────────────────
+const UploadField = ({ label, subtitle, required, file, onPick, onRemove }) => (
+  <View className="w-full mb-5">
+    <Text className="text-sm font-bold text-black mb-1">
+      {label} {required && <Text className="text-[#D62828]">*</Text>}
+    </Text>
+    {subtitle && (
+      <Text className="text-xs text-gray-400 mb-2">{subtitle}</Text>
     )}
-  </TouchableOpacity>
+
+    {file ? (
+      // File selected
+      <View className="border border-green-400 bg-green-50 rounded-xl px-4 py-3 flex-row items-center">
+        <Ionicons name="document-outline" size={20} color="#10B981" />
+        <Text className="text-xs text-green-700 font-semibold ml-2 flex-1" numberOfLines={1}>
+          {file.name}
+        </Text>
+        <TouchableOpacity onPress={onRemove} className="ml-2">
+          <Ionicons name="close-circle" size={20} color="#EF4444" />
+        </TouchableOpacity>
+      </View>
+    ) : (
+      // Empty upload box
+      <TouchableOpacity
+        onPress={onPick}
+        className="border border-dashed border-gray-300 bg-gray-50 rounded-xl py-6 items-center justify-center"
+      >
+        <Feather name="upload" size={26} color="#F59E0B" style={{ marginBottom: 6 }} />
+        <Text className="text-sm font-semibold text-gray-500">Click to upload or drag and drop</Text>
+        <Text className="text-xs text-gray-400 mt-1">PNG, JPG, PDF (max. 10MB)</Text>
+      </TouchableOpacity>
+    )}
+  </View>
 );
 
+// ── Main Screen ───────────────────────────────────────────────────────────────
 export default function Register6({ navigation, route }) {
-  const params = route?.params || {};
+  const prevData = route.params || {};
 
-  const [officialIdFile, setOfficialIdFile] = useState(null);
-  const [authLetterFile, setAuthLetterFile] = useState(null);
-  const [certCardsFile, setCertCardsFile] = useState(null);
+  const [officialId, setOfficialId] = useState(null);
+  const [authLetter, setAuthLetter] = useState(null);
+  const [certCards, setCertCards] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const pickFile = async (setter) => {
+  const pickDocument = async (setter) => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: ['image/png', 'image/jpeg', 'application/pdf'],
+        type: ['image/*', 'application/pdf'],
         copyToCacheDirectory: true,
       });
       if (!result.canceled && result.assets?.length > 0) {
-        setter(result.assets[0]);
+        const file = result.assets[0];
+        if (file.size > 10 * 1024 * 1024) {
+          Alert.alert('File too large', 'Please select a file under 10MB');
+          return;
+        }
+        setter(file);
       }
     } catch (err) {
-      alert('Failed to pick file');
+      Alert.alert('Error', 'Could not open file picker');
     }
   };
 
   const handleSubmit = async () => {
-    if (!officialIdFile) {
-      alert('Please upload your Official ID / Employee Badge');
+    if (!officialId) {
+      Alert.alert('Required', 'Please upload your Official ID / Employee Badge');
       return;
     }
+    if (!authLetter) {
+      Alert.alert('Required', 'Please upload your Authorization Letter');
+      return;
+    }
+
     setLoading(true);
     try {
-      await API.post('/auth/register', {
-        ...params,
-        latitude: 0,
-        longitude: 0,
+      const formData = new FormData();
+
+      // Append all registration data collected from previous steps
+      Object.entries(prevData).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          // Arrays need to be stringified
+          formData.append(key, typeof value === 'object' ? JSON.stringify(value) : value);
+        }
       });
-      navigation.navigate('Login');
-      alert('Registration submitted! Our team will review your documents.');
+      formData.append('role', 'responder');
+
+      // Append documents
+      formData.append('officialId', {
+        uri: officialId.uri,
+        name: officialId.name,
+        type: officialId.mimeType || 'application/octet-stream',
+      });
+      formData.append('authLetter', {
+        uri: authLetter.uri,
+        name: authLetter.name,
+        type: authLetter.mimeType || 'application/octet-stream',
+      });
+      if (certCards) {
+        formData.append('certCards', {
+          uri: certCards.uri,
+          name: certCards.name,
+          type: certCards.mimeType || 'application/octet-stream',
+        });
+      }
+
+      await API.post('/auth/register', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      navigation.navigate('Register7');
     } catch (err) {
-      alert(err.response?.data?.message || 'Registration failed');
+      Alert.alert('Error', err.response?.data?.message || 'Submission failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <View style={styles.screen}>
-      <GradientHeader title="Create Account" onClose={() => navigation.navigate('Register1')} />
+    <View className="flex-1 bg-[#F5F5F5]">
+      <Header title="Create Account" onClose={() => navigation.navigate('Register1')} />
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView contentContainerStyle={{ padding: 24 }}>
 
         {/* Step indicator */}
-        <View style={styles.stepWrap}>
-          <View style={styles.stepRow}>
-            <Text style={styles.stepText}>Step 6 of 6</Text>
-            <Text style={styles.stepLabel}>Verification</Text>
+        <View className="mb-5">
+          <View className="flex-row justify-between items-center mb-1">
+            <Text className="text-xs text-gray-400 font-semibold">Step 6 of 6</Text>
+            <Text className="text-xs text-[#D62828] font-bold">Verification</Text>
           </View>
-          <View style={styles.stepBar}>
-            <View style={[styles.stepFill, { width: '100%' }]} />
+          <View className="w-full h-1 bg-gray-200 rounded-full">
+            <View className="h-1 bg-[#D62828] rounded-full w-full" />
           </View>
         </View>
 
-        {/* Icon */}
-        <View style={styles.iconCircle}>
-          <MaterialCommunityIcons name="file-document-outline" size={32} color="#a855f7" />
-        </View>
-
-        <Text style={styles.title}>Document Verification</Text>
-        <Text style={styles.subtitle}>Upload required documents for verification</Text>
-
-        {/* Important notice */}
-        <View style={styles.noticeBox}>
-          <View style={styles.noticeRow}>
-            <MaterialCommunityIcons name="alert-circle-outline" size={18} color="#D4A017" style={{ marginRight: 6, marginTop: 1 }} />
-            <Text style={styles.noticeTitle}>Important</Text>
+        {/* Icon + Title */}
+        <View className="items-center mb-5">
+          <View className="w-16 h-16 rounded-full bg-purple-100 items-center justify-center mb-3">
+            <Ionicons name="document-text-outline" size={30} color="#7C3AED" />
           </View>
-          <Text style={styles.noticeText}>
-            All documents will be reviewed by our verification team. Please ensure they are clear, readable, and valid.
+          <Text className="text-xl font-bold text-black mb-1">Document Verification</Text>
+          <Text className="text-sm text-gray-400 text-center">
+            Upload required documents for verification
           </Text>
         </View>
 
-        {/* Official ID */}
-        <Text style={styles.label}>
-          Official ID / Employee Badge <Text style={styles.required}>*</Text>
-        </Text>
-        <Text style={styles.fieldHint}>Upload a clear photo of your official ID or employee badge</Text>
-        <UploadBox file={officialIdFile} onPress={() => pickFile(setOfficialIdFile)} />
+        {/* Important notice */}
+        <View className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6 flex-row">
+          <Ionicons name="information-circle" size={18} color="#D97706" style={{ marginTop: 1, marginRight: 8 }} />
+          <View className="flex-1">
+            <Text className="text-xs font-bold text-yellow-800 mb-1">Important</Text>
+            <Text className="text-xs text-yellow-700 leading-4">
+              All documents will be reviewed by our verification team. Please ensure they are clear, readable, and valid.
+            </Text>
+          </View>
+        </View>
 
-        {/* Auth Letter */}
-        <Text style={styles.label}>Authorization Letter / Appointment Letter</Text>
-        <Text style={styles.fieldHint}>Letter from your organization authorizing you as a responder</Text>
-        <UploadBox file={authLetterFile} onPress={() => pickFile(setAuthLetterFile)} />
+        {/* Upload fields */}
+        <UploadField
+          label="Official ID / Employee Badge"
+          subtitle="Upload a clear photo of your official ID or employee badge"
+          required
+          file={officialId}
+          onPick={() => pickDocument(setOfficialId)}
+          onRemove={() => setOfficialId(null)}
+        />
 
-        {/* Cert Cards */}
-        <Text style={styles.label}>Certification Cards</Text>
-        <Text style={styles.fieldHint}>Upload any relevant certification cards (CPR, EMT, First Aid, etc.)</Text>
-        <UploadBox file={certCardsFile} onPress={() => pickFile(setCertCardsFile)} />
+        <UploadField
+          label="Authorization Letter / Appointment Letter"
+          subtitle="Letter from your organization authorizing you as a responder"
+          required
+          file={authLetter}
+          onPick={() => pickDocument(setAuthLetter)}
+          onRemove={() => setAuthLetter(null)}
+        />
+
+        <UploadField
+          label="Certification Cards"
+          subtitle="Upload any relevant certification cards (CPR, EMT, First Aid, etc.)"
+          file={certCards}
+          onPick={() => pickDocument(setCertCards)}
+          onRemove={() => setCertCards(null)}
+        />
 
         {/* Buttons */}
-        <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+        <View className="flex-row w-full mt-2 mb-4" style={{ gap: 12 }}>
+          <TouchableOpacity
+            className="flex-1 h-12 rounded-full border-2 border-[#D62828] justify-center items-center flex-row"
+            onPress={() => navigation.goBack()}
+            disabled={loading}
+          >
             <Ionicons name="arrow-back" size={16} color="#D62828" style={{ marginRight: 4 }} />
-            <Text style={styles.backBtnText}>Back</Text>
+            <Text className="text-[#D62828] text-sm font-bold">Back</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.submitBtn, loading && { opacity: 0.7 }]}
+            className={`flex-[2] h-12 rounded-full justify-center items-center flex-row ${loading ? 'bg-green-400' : 'bg-green-500'}`}
             onPress={handleSubmit}
             disabled={loading}
           >
-            <Ionicons name="shield-checkmark-outline" size={16} color="#ffffff" style={{ marginRight: 6 }} />
-            <Text style={styles.submitBtnText}>
-              {loading ? 'Submitting...' : 'Submit for\nVerification'}
-            </Text>
+            {loading ? (
+              <ActivityIndicator color="white" size="small" />
+            ) : (
+              <>
+                <Ionicons name="checkmark-circle-outline" size={18} color="white" style={{ marginRight: 6 }} />
+                <Text className="text-white text-sm font-bold">Submit for Verification</Text>
+              </>
+            )}
           </TouchableOpacity>
         </View>
 
-        <View style={styles.signinRow}>
-          <Text style={styles.signinText}>Already have an account? </Text>
+        <View className="flex-row items-center justify-center mb-6">
+          <Text className="text-sm text-gray-400">Already have an account? </Text>
           <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-            <Text style={styles.signinLink}>Sign in</Text>
+            <Text className="text-sm text-[#D62828] font-bold">Sign in</Text>
           </TouchableOpacity>
         </View>
 
@@ -153,191 +233,3 @@ export default function Register6({ navigation, route }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#F5F5F5',
-  },
-  scrollContent: {
-    padding: 24,
-    alignItems: 'center',
-  },
-  stepWrap: {
-    width: '100%',
-    marginBottom: 20,
-  },
-  stepRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 4,
-  },
-  stepText: {
-    fontSize: 12,
-    color: '#9ca3af',
-  },
-  stepLabel: {
-    fontSize: 12,
-    color: '#9ca3af',
-  },
-  stepBar: {
-    width: '100%',
-    height: 4,
-    backgroundColor: '#e5e7eb',
-    borderRadius: 99,
-  },
-  stepFill: {
-    height: 4,
-    backgroundColor: '#D62828',
-    borderRadius: 99,
-  },
-  iconCircle: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: '#FAF0FF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 4,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#9ca3af',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  noticeBox: {
-    width: '100%',
-    backgroundColor: '#FFFBEB',
-    borderWidth: 1,
-    borderColor: '#FDE68A',
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 20,
-  },
-  noticeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  noticeTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#D4A017',
-  },
-  noticeText: {
-    fontSize: 13,
-    color: '#92400e',
-    lineHeight: 18,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#000000',
-    alignSelf: 'flex-start',
-    marginTop: 12,
-    marginBottom: 4,
-  },
-  required: {
-    color: '#D62828',
-  },
-  fieldHint: {
-    fontSize: 12,
-    color: '#9ca3af',
-    alignSelf: 'flex-start',
-    marginBottom: 8,
-  },
-  uploadBox: {
-    width: '100%',
-    height: 100,
-    backgroundColor: '#ffffff',
-    borderWidth: 1.5,
-    borderColor: '#e5e7eb',
-    borderStyle: 'dashed',
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 4,
-    ...Platform.select({
-      android: { elevation: 1 },
-    }),
-  },
-  uploadText: {
-    fontSize: 13,
-    color: '#374151',
-    fontWeight: '500',
-    marginTop: 6,
-  },
-  uploadHint: {
-    fontSize: 11,
-    color: '#9ca3af',
-    marginTop: 2,
-  },
-  uploadedFileName: {
-    fontSize: 13,
-    color: '#D62828',
-    fontWeight: '600',
-    marginTop: 6,
-    paddingHorizontal: 16,
-    textAlign: 'center',
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    width: '100%',
-    marginTop: 24,
-    marginBottom: 16,
-    gap: 12,
-  },
-  backBtn: {
-    flex: 1,
-    height: 56,
-    borderRadius: 99,
-    borderWidth: 2,
-    borderColor: '#D62828',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'row',
-    backgroundColor: '#ffffff',
-  },
-  backBtnText: {
-    color: '#D62828',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  submitBtn: {
-    flex: 2,
-    height: 56,
-    borderRadius: 99,
-    backgroundColor: '#22c55e',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  submitBtnText: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  signinRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  signinText: {
-    fontSize: 14,
-    color: '#9ca3af',
-  },
-  signinLink: {
-    fontSize: 14,
-    color: '#D62828',
-    fontWeight: 'bold',
-  },
-});

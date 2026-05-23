@@ -45,7 +45,9 @@ const InputField = ({
 );
 
 export default function Register2({ navigation, route }) {
-  const { role } = route.params || {};
+  // ✅ Safely extract and trim role to avoid whitespace/case issues
+  const rawRole = route?.params?.role;
+  const role = rawRole ? rawRole.trim() : '';
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -59,73 +61,87 @@ export default function Register2({ navigation, route }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
+  const isCitizen = role === 'Citizen';
+  const isResponder = role === 'Authority';
+
   const handleContinue = async () => {
-  if (role === 'Citizen') {
-    if (!name || !email || !contact_number || !nic || !address || !district) {
-      alert('Please fill in all fields');
-      return;
+    if (isCitizen) {
+      if (!name || !email || !contact_number || !nic || !address || !district) {
+        alert('Please fill in all fields');
+        return;
+      }
+      if (password !== confirmPassword) {
+        alert('Passwords do not match');
+        return;
+      }
+      if (password.length < 8) {
+        alert('Password must be at least 8 characters');
+        return;
+      }
+      try {
+        await API.post('/auth/register', {
+          name, email, password,
+          role, district, contact_number,
+          organization, latitude: 0, longitude: 0,
+        });
+        navigation.navigate('Login');
+        alert('Registration successful! Please login.');
+      } catch (err) {
+        alert(err.response?.data?.message || 'Registration failed');
+      }
+    } else if (isResponder) {
+      if (!name || !email || !contact_number || !nic) {
+        alert('Please fill in all fields');
+        return;
+      }
+      navigation.navigate('Register3', { role, name, email, contact_number, nic });
     }
-    if (password !== confirmPassword) {
-      alert('Passwords do not match');
-      return;
-    }
-    if (password.length < 8) {
-      alert('Password must be at least 8 characters');
-      return;
-    }
-    try {
-      await API.post('/auth/register', {
-        name, email, password,
-        role, district, contact_number,
-        organization, latitude: 0, longitude: 0,
-      });
-      navigation.navigate('Login');
-      alert('Registration successful! Please login.');
-    } catch (err) {
-      alert(err.response?.data?.message || 'Registration failed');
-    }
-  } else if (role === 'Authority') {  // ← fix this line
-    if (!name || !email || !contact_number || !nic) {
-      alert('Please fill in all fields');
-      return;
-    }
-    navigation.navigate('Register3', { role, name, email, contact_number, nic });
-  }
-};
-
-  const renderCitizenFields = () => (
-    <>
-      <InputField label="Full Name" iconComponent={<Ionicons name="person-outline" size={18} color="#aaaaaa" />} placeholder="Enter your full name" onChangeText={setName} />
-      <InputField label="Email" iconComponent={<Feather name="mail" size={18} color="#aaaaaa" />} placeholder="Enter your email" onChangeText={setEmail} keyboardType="email-address" />
-      <InputField label="Phone Number" iconComponent={<Feather name="phone" size={18} color="#aaaaaa" />} placeholder="Enter your phone number" onChangeText={setContactNumber} keyboardType="phone-pad" />
-      <InputField label="NIC / Passport Number" iconComponent={<MaterialCommunityIcons name="card-account-details-outline" size={18} color="#aaaaaa" />} placeholder="Enter your NIC or Passport Number" onChangeText={setNic} />
-      <InputField label="District" iconComponent={<Ionicons name="map-outline" size={18} color="#aaaaaa" />} placeholder="Enter your district" onChangeText={setDistrict} />
-      <InputField label="Residential Address" iconComponent={<Ionicons name="location-outline" size={18} color="#aaaaaa" />} placeholder="Enter your complete address" onChangeText={setAddress} multiline />
-    </>
-  );
-
-  const renderResponderFields = () => (
-    <>
-      <InputField label="Full Name" iconComponent={<Ionicons name="person-outline" size={18} color="#aaaaaa" />} placeholder="Enter your full name" onChangeText={setName} />
-      <InputField label="Email" iconComponent={<Feather name="mail" size={18} color="#aaaaaa" />} placeholder="Enter your email" onChangeText={setEmail} keyboardType="email-address" />
-      <InputField label="Phone Number" iconComponent={<Feather name="phone" size={18} color="#aaaaaa" />} placeholder="Enter your phone number" onChangeText={setContactNumber} keyboardType="phone-pad" />
-      <InputField label="NIC / Passport Number" iconComponent={<MaterialCommunityIcons name="card-account-details-outline" size={18} color="#aaaaaa" />} placeholder="Enter your NIC or Passport Number" onChangeText={setNic} />
-    </>
-  );
+  };
 
   const getTitle = () => {
-    if (role === 'Citizen') return { title: 'Citizen Registration', subtitle: 'Please provide your personal details' };
-    if (role === 'Authority') return { title: 'Responder Registration', subtitle: 'Please provide your personal details' };
+    if (isCitizen) return { title: 'Citizen Registration', subtitle: 'Please provide your personal details' };
+    if (isResponder) return { title: 'Responder Registration', subtitle: 'Please provide your personal details' };
     return { title: 'Personal Information', subtitle: 'Please provide your details' };
   };
 
   const getRoleIcon = () => {
-    if (role === 'Citizen') return <Ionicons name="person-outline" size={32} color="#D62828" />;
-    if (role === 'Authority') return <FontAwesome5 name="ambulance" size={26} color="#D62828" />;
+    if (isResponder) return <FontAwesome5 name="ambulance" size={26} color="#D62828" />;
     return <Ionicons name="person-outline" size={32} color="#D62828" />;
   };
 
   const { title, subtitle } = getTitle();
+
+  // ✅ Always render fields — works for both Citizen and Responder
+  const renderCommonFields = () => (
+    <>
+      <InputField
+        label="Full Name"
+        iconComponent={<Ionicons name="person-outline" size={18} color="#aaaaaa" />}
+        placeholder="Enter your full name"
+        onChangeText={setName}
+      />
+      <InputField
+        label="Email"
+        iconComponent={<Feather name="mail" size={18} color="#aaaaaa" />}
+        placeholder="Enter your email"
+        onChangeText={setEmail}
+        keyboardType="email-address"
+      />
+      <InputField
+        label="Phone Number"
+        iconComponent={<Feather name="phone" size={18} color="#aaaaaa" />}
+        placeholder="Enter your phone number"
+        onChangeText={setContactNumber}
+        keyboardType="phone-pad"
+      />
+      <InputField
+        label="NIC / Passport Number"
+        iconComponent={<MaterialCommunityIcons name="card-account-details-outline" size={18} color="#aaaaaa" />}
+        placeholder="Enter your NIC or Passport Number"
+        onChangeText={setNic}
+      />
+    </>
+  );
 
   return (
     <View style={styles.screen}>
@@ -133,7 +149,7 @@ export default function Register2({ navigation, route }) {
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
 
-        {role === 'Authority' && (
+        {isResponder && (
           <View style={styles.stepWrap}>
             <Text style={styles.stepText}>Step 1 of 6</Text>
             <View style={styles.stepBar}>
@@ -149,14 +165,30 @@ export default function Register2({ navigation, route }) {
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.subtitle}>{subtitle}</Text>
 
-        {role === 'Citizen' && renderCitizenFields()}
-        {role === 'Authority' && renderResponderFields()}
+        {/* ✅ Common fields always render */}
+        {renderCommonFields()}
 
-        {role === 'Citizen' && (
+        {/* ✅ Citizen-only extra fields */}
+        {isCitizen && (
           <>
+            <InputField
+              label="District"
+              iconComponent={<Ionicons name="map-outline" size={18} color="#aaaaaa" />}
+              placeholder="Enter your district"
+              onChangeText={setDistrict}
+            />
+            <InputField
+              label="Residential Address"
+              iconComponent={<Ionicons name="location-outline" size={18} color="#aaaaaa" />}
+              placeholder="Enter your complete address"
+              onChangeText={setAddress}
+              multiline
+            />
             <Text style={styles.label}>Password<Text style={styles.required}> *</Text></Text>
             <View style={styles.inputBox}>
-              <View style={styles.iconWrap}><Feather name="lock" size={18} color="#aaaaaa" /></View>
+              <View style={styles.iconWrap}>
+                <Feather name="lock" size={18} color="#aaaaaa" />
+              </View>
               <TextInput
                 style={styles.textInput}
                 placeholder="Create a strong password"
@@ -174,7 +206,9 @@ export default function Register2({ navigation, route }) {
 
             <Text style={styles.label}>Confirm Password<Text style={styles.required}> *</Text></Text>
             <View style={styles.inputBox}>
-              <View style={styles.iconWrap}><Feather name="lock" size={18} color="#aaaaaa" /></View>
+              <View style={styles.iconWrap}>
+                <Feather name="lock" size={18} color="#aaaaaa" />
+              </View>
               <TextInput
                 style={styles.textInput}
                 placeholder="Re-enter your password"
@@ -199,7 +233,7 @@ export default function Register2({ navigation, route }) {
 
           <TouchableOpacity style={styles.continueBtn} onPress={handleContinue}>
             <Text style={styles.continueBtnText}>
-              {role === 'Citizen' ? 'Complete Registration' : 'Continue'}
+              {isCitizen ? 'Complete Registration' : 'Continue'}
             </Text>
             <Ionicons name="arrow-forward" size={16} color="#ffffff" style={{ marginLeft: 4 }} />
           </TouchableOpacity>
