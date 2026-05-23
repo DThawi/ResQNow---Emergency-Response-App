@@ -63,3 +63,13 @@ export const getNearbyClusters = async (latitude, longitude, radiusKm = 10) => {
   });
   return res.data;
 };
+
+export const getResponders = async () => {
+  const res = await API.get("/admin/responders");
+  return res.data;
+};
+
+export const assignResponder = async (incidentId, responderId) => {
+  const res = await API.put(`/incidents/${incidentId}/assign`, { responderId });
+  return res.data;
+};

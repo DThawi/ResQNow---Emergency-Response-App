@@ -28,3 +28,14 @@ exports.verifyResponder = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// Get all responders (verified and unverified)
+exports.getResponders = async (req, res) => {
+  try {
+    const responders = await User.find({ role: "Authority" }).select("-password");
+    res.json(responders);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
