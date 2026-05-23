@@ -248,3 +248,41 @@ exports.adminRejectIncident = async (req, res) => {
     res.status(500).json({ message: "Error rejecting incident", error: err.message });
   }
 };
+// Admin assigns responder to an incident
+exports.assignResponder = async (req, res) => {
+  try {
+    const { responderId } = req.body;
+    const incident = await Incident.findById(req.params.id);
+
+    if (!incident) {
+      return res.status(404).json({ message: "Incident not found" });
+    }
+
+    const responder = await User.findById(responderId);
+    if (!responder || responder.role !== "Authority") {
+      return res.status(400).json({ message: "Invalid responder" });
+    }
+
+    // Add responder to assignedAuthorities if not already there
+    if (!incident.assignedAuthorities.includes(responderId)) {
+      incident.assignedAuthorities.push(responderId);
+    }
+
+    // Transition status to Assigned if currently Pending or Verified
+    if (incident.status === 'Pending' || incident.status === 'Verified') {
+      incident.status = 'Assigned';
+    }
+
+    // Log status history
+    incident.status_history.push({
+      status: incident.status,
+      changed_by: req.user.id
+    });
+
+    await incident.save();
+    res.status(200).json({ message: "Responder assigned successfully", incident });
+  } catch (err) {
+    res.status(500).json({ message: "Error assigning responder", error: err.message });
+  }
+};
+

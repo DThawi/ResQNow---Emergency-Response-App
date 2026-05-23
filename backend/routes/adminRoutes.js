@@ -13,4 +13,12 @@ router.put(
   adminController.verifyResponder
 );
 
+// Admin gets all responders
+router.get(
+  "/responders",
+  verifyToken,
+  allowRoles("Admin"),
+  adminController.getResponders
+);
+
 module.exports = router;
