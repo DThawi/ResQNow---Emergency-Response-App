@@ -3,9 +3,22 @@ import {
   AlertCircle, CheckCircle, Users, MapPin, Clock, Truck, 
   Activity, Navigation, CheckCircle2, Shield, Flame, Plus, X, ToggleRight
 } from 'lucide-react';
-import { getIncidents, updateIncidentStatus, getNearbyClusters } from '../services/analyticsService';
+import { getIncidents, updateIncidentStatus, getNearbyClusters, getResponders, assignResponder } from '../services/analyticsService';
 
 const NEARBY_CLUSTER_RADIUS_KM = 10;
+
+const getDistanceKm = (lat1, lon1, lat2, lon2) => {
+  if (!lat1 || !lon1 || !lat2 || !lon2) return null;
+  const R = 6371; // Earth radius in km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+};
 
 const formatDistanceLabel = (meters) => {
   if (!Number.isFinite(meters)) return 'Distance unknown';
@@ -36,6 +49,7 @@ const AdminIncidentManagementScreen = () => {
     const [loadingIncidents, setLoadingIncidents] = useState(true);
     const [incidentError, setIncidentError] = useState(null);
 
+  const [allResponders, setAllResponders] = useState([]);
   const [availableResponders, setAvailableResponders] = useState([]);
   const [loadingClusters, setLoadingClusters] = useState(false);
   const [clustersError, setClustersError] = useState(null);
@@ -44,18 +58,25 @@ const AdminIncidentManagementScreen = () => {
   const selectedIncident = incidents.find(i => i.id === selectedIncidentId);
 
   // --- ASSIGN LOGIC ---
-  const handleAssign = (responder) => {
-    setIncidents(prev => prev.map(inc => {
-        if (inc.id === selectedIncidentId) {
-            return {
-                ...inc,
-                status: 'Dispatched',
-                assigned: [...inc.assigned, responder.name]
-            };
-        }
-        return inc;
-    }));
-    setAvailableResponders(prev => prev.filter(r => r.id !== responder.id));
+  const handleAssign = async (responder) => {
+    try {
+      await assignResponder(selectedIncidentId, responder.id);
+      
+      setIncidents(prev => prev.map(inc => {
+          if (inc.id === selectedIncidentId) {
+              return {
+                  ...inc,
+                  status: 'Dispatched',
+                  assigned: [...inc.assigned, responder.id] // Store responder's ID
+              };
+          }
+          return inc;
+      }));
+      setAvailableResponders(prev => prev.filter(r => r.id !== responder.id));
+    } catch (err) {
+      console.error("Error assigning responder:", err);
+      alert("Failed to assign responder: " + (err.response?.data?.message || err.message));
+    }
   };
 
   // --- RESOLVE & REMOVE LOGIC ---
@@ -128,54 +149,65 @@ const AdminIncidentManagementScreen = () => {
         return () => { cancelled = true; };
     }, []);
 
+    // Fetch all responders on mount
     useEffect(() => {
-        let cancelled = false;
-
-        const loadNearbyClusters = async () => {
-            const incident = incidents.find((i) => i.id === selectedIncidentId);
-            if (!incident?.latitude || !incident?.longitude) {
-                setAvailableResponders([]);
-                setClustersError(null);
-                return;
-            }
-
+        const fetchResponders = async () => {
             try {
-                setLoadingClusters(true);
-                setClustersError(null);
-                const clusters = await getNearbyClusters(
-                    incident.latitude,
-                    incident.longitude,
-                    NEARBY_CLUSTER_RADIUS_KM
-                );
-                if (cancelled) return;
-
-                const units = (Array.isArray(clusters) ? clusters : [])
-                    .map(formatClusterUnit)
-                    .filter(Boolean)
-                    .filter((unit) => {
-                        const ids = (unit.cluster.incidents || []).map((i) => String(i._id));
-                        return !(ids.length === 1 && ids[0] === String(selectedIncidentId));
-                    });
-
-                setAvailableResponders(units);
+                const fleet = await getResponders();
+                setAllResponders(fleet || []);
             } catch (err) {
-                if (!cancelled) {
-                    setClustersError(err.message || 'Unable to load nearby clusters');
-                    setAvailableResponders([]);
-                }
-            } finally {
-                if (!cancelled) setLoadingClusters(false);
+                console.error("Error fetching fleet:", err);
             }
         };
+        fetchResponders();
+    }, []);
 
-        if (selectedIncidentId) {
-            loadNearbyClusters();
-        } else {
+    // Filter available responders by proximity to the selected incident
+    useEffect(() => {
+        const incident = incidents.find((i) => i.id === selectedIncidentId);
+        if (!incident?.latitude || !incident?.longitude || allResponders.length === 0) {
             setAvailableResponders([]);
+            setClustersError(null);
+            return;
         }
 
-        return () => { cancelled = true; };
-    }, [selectedIncidentId, incidents]);
+        try {
+            setLoadingClusters(true);
+            setClustersError(null);
+
+            // Filter verified authorities that are not already assigned to this incident
+            const verified = allResponders.filter(r => r.isVerified && !incident.assigned.includes(r._id));
+
+            const matched = verified.map(responder => {
+                const coords = responder.location?.coordinates;
+                let distanceVal = Infinity;
+                let distanceLabel = 'Distance unknown';
+
+                if (coords && coords.length === 2) {
+                    const dist = getDistanceKm(incident.latitude, incident.longitude, coords[1], coords[0]);
+                    distanceVal = dist;
+                    distanceLabel = dist >= 1 ? `${dist.toFixed(1)} km away` : `${Math.round(dist * 1000)} m away`;
+                }
+
+                return {
+                    id: responder._id,
+                    name: `${responder.organization} (${responder.name})`,
+                    distance: distanceLabel,
+                    distanceVal
+                };
+            });
+
+            // Sort by distance
+            matched.sort((a, b) => a.distanceVal - b.distanceVal);
+
+            setAvailableResponders(matched);
+        } catch (err) {
+            setClustersError(err.message || 'Unable to process responders proximity');
+            setAvailableResponders([]);
+        } finally {
+            setLoadingClusters(false);
+        }
+    }, [selectedIncidentId, incidents, allResponders]);
 
   const getStatusClasses = (status) => {
     switch(status) {
@@ -265,15 +297,19 @@ const AdminIncidentManagementScreen = () => {
                                       <div className="mb-[25px]">
                                           {selectedIncident.assigned.length > 0 ? (
                                               <div className="flex flex-col gap-[10px]">
-                                                  {selectedIncident.assigned.map(unit => (
-                                                      <div key={unit} className="flex items-center justify-between bg-[#ECFDF5] p-[15px] rounded-[12px] border border-[#A7F3D0]">
-                                                          <div className="flex items-center gap-[10px]">
-                                                              <Truck size={18} color="#059669" /> 
-                                                              <span className="text-[15px] font-bold text-emerald-900">{unit}</span>
+                                                  {selectedIncident.assigned.map(userId => {
+                                                      const respObj = allResponders.find(r => r._id === userId);
+                                                      const displayName = respObj ? `${respObj.organization} (${respObj.name})` : `Responder (${userId})`;
+                                                      return (
+                                                          <div key={userId} className="flex items-center justify-between bg-[#ECFDF5] p-[15px] rounded-[12px] border border-[#A7F3D0]">
+                                                              <div className="flex items-center gap-[10px]">
+                                                                  <Truck size={18} color="#059669" /> 
+                                                                  <span className="text-[15px] font-bold text-emerald-900">{displayName}</span>
+                                                              </div>
+                                                              <span className="text-[11px] text-[#059669] font-[900]">EN ROUTE</span>
                                                           </div>
-                                                          <span className="text-[11px] text-[#059669] font-[900]">EN ROUTE</span>
-                                                      </div>
-                                                  ))}
+                                                      );
+                                                  })}
                                               </div>
                                           ) : (
                                               <div className="bg-white p-[20px] rounded-[12px] border border-dashed border-[#CBD5E1] text-center text-[14px] text-[#94A3B8] italic">
@@ -281,11 +317,11 @@ const AdminIncidentManagementScreen = () => {
                                               </div>
                                           )}
                                       </div>
-                                      <h4 className="m-0 mb-[12px] text-[11px] text-[#94A3B8] font-[900] tracking-[1px]">NEARBY INCIDENT CLUSTERS</h4>
+                                      <h4 className="m-0 mb-[12px] text-[11px] text-[#94A3B8] font-[900] tracking-[1px]">AVAILABLE RESPONDERS (BY PROXIMITY)</h4>
                                       <div className="flex flex-col gap-[12px]">
                                           {loadingClusters ? (
                                               <div className="bg-white p-[20px] rounded-[12px] border border-dashed border-[#CBD5E1] text-center text-[14px] text-[#94A3B8]">
-                                                  Loading nearby clusters...
+                                                  Loading nearby responders...
                                               </div>
                                           ) : clustersError ? (
                                               <div className="bg-white p-[20px] rounded-[12px] border border-dashed border-[#FECACA] text-center text-[14px] text-[#DC2626]">
@@ -297,7 +333,7 @@ const AdminIncidentManagementScreen = () => {
                                               </div>
                                           ) : availableResponders.length === 0 ? (
                                               <div className="bg-white p-[20px] rounded-[12px] border border-dashed border-[#CBD5E1] text-center text-[14px] text-[#94A3B8] italic">
-                                                  No other incident clusters within {NEARBY_CLUSTER_RADIUS_KM} km.
+                                                  No other responders available.
                                               </div>
                                           ) : (
                                               availableResponders.map(unit => (
