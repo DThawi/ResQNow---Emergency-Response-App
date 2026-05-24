@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const { findCluster } = require("../utils/clustering");
 const User = require('../models/User');
 const Incident = require('../models/Incident');
+const { notifyAssignment, notifyStatusChange } = require('../utils/notificationHelper');
 
 // Fetch user-specific reports
 exports.getMyReports = async (req, res) => {
@@ -173,6 +174,14 @@ exports.updateResponseStatus = async (req, res) => {
 
     await incident.save();
 
+    // 🔔 Notify the citizen who reported the incident
+    await notifyStatusChange(incident);
+ 
+    // 🔔 Notify assigned authorities if status is Assigned
+    if (status === 'Assigned') {
+      await notifyAssignment(incident);
+    }
+
     res.status(200).json({ message: "Response status updated", incident });
 
   } catch (err) {
@@ -205,3 +214,75 @@ exports.getResponseProgress = async (req, res) => {
     });
   }
 };
+
+exports.adminVerifyIncident = async (req, res) => {
+  try {
+    const incident = await Incident.findById(req.params.id);
+    if (!incident) return res.status(404).json({ message: "Incident not found" });
+ 
+    incident.status = 'Verified';
+    incident.status_history.push({
+      status: 'Verified',
+      changed_by: req.user.id,
+    });
+ 
+    await incident.save();
+    await notifyStatusChange(incident);
+ 
+    res.status(200).json({ message: "Incident verified", incident });
+  } catch (err) {
+    res.status(500).json({ message: "Error verifying incident", error: err.message });
+  }
+};
+ 
+// Admin rejects (deletes) an incident as spam
+exports.adminRejectIncident = async (req, res) => {
+  try {
+    const incident = await Incident.findById(req.params.id);
+    if (!incident) return res.status(404).json({ message: "Incident not found" });
+ 
+    await Incident.findByIdAndDelete(req.params.id);
+ 
+    res.status(200).json({ message: "Incident rejected and removed" });
+  } catch (err) {
+    res.status(500).json({ message: "Error rejecting incident", error: err.message });
+  }
+};
+// Admin assigns responder to an incident
+exports.assignResponder = async (req, res) => {
+  try {
+    const { responderId } = req.body;
+    const incident = await Incident.findById(req.params.id);
+
+    if (!incident) {
+      return res.status(404).json({ message: "Incident not found" });
+    }
+
+    const responder = await User.findById(responderId);
+    if (!responder || responder.role !== "Authority") {
+      return res.status(400).json({ message: "Invalid responder" });
+    }
+
+    // Add responder to assignedAuthorities if not already there
+    if (!incident.assignedAuthorities.includes(responderId)) {
+      incident.assignedAuthorities.push(responderId);
+    }
+
+    // Transition status to Assigned if currently Pending or Verified
+    if (incident.status === 'Pending' || incident.status === 'Verified') {
+      incident.status = 'Assigned';
+    }
+
+    // Log status history
+    incident.status_history.push({
+      status: incident.status,
+      changed_by: req.user.id
+    });
+
+    await incident.save();
+    res.status(200).json({ message: "Responder assigned successfully", incident });
+  } catch (err) {
+    res.status(500).json({ message: "Error assigning responder", error: err.message });
+  }
+};
+

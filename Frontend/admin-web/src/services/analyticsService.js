@@ -73,3 +73,21 @@ export const createIncident = async (payload) => {
   const res = await API.post("/incidents", payload);
   return res.data;
 };
+
+
+export const getNearbyClusters = async (latitude, longitude, radiusKm = 10) => {
+  const res = await API.get("/incidents/clusters", {
+    params: { latitude, longitude, radiusKm },
+  });
+  return res.data;
+};
+
+export const getResponders = async () => {
+  const res = await API.get("/admin/responders");
+  return res.data;
+};
+
+export const assignResponder = async (incidentId, responderId) => {
+  const res = await API.put(`/incidents/${incidentId}/assign`, { responderId });
+  return res.data;
+};

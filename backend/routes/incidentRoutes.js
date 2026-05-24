@@ -21,5 +21,6 @@ router.post('/', verifyToken, upload.single("image"), uploadToCloudinary, incide
 router.post('/:id/feedback', verifyToken, incidentController.addIncidentFeedback);
 router.put('/:id/status', verifyToken, allowRoles("Admin", "Authority"), incidentController.updateResponseStatus);
 router.get('/:id/progress', verifyToken, incidentController.getResponseProgress);
+router.put('/:id/assign', verifyToken, allowRoles("Admin"), incidentController.assignResponder);
 
 module.exports = router;
