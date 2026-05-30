@@ -59,7 +59,8 @@ import ResponderIncidentDetailsScreen4 from "../screens/Responder/IncidentDetail
 // Kept verified responder dashboard views from your folder list
 import ResponderDashboard from "../screens/Responder/ResponderDashboard";
 import AlertsNotifications from "../screens/Responder/AlertsNotifications";
-
+import ResponderDangerZone from "../screens/Responder/ResponderDangerzones";
+import ResponderDangerZoneDetails from "../screens/Responder/ResponderDangerZoneDetails";
 
 
 const Stack = createNativeStackNavigator();
@@ -133,6 +134,8 @@ export default function AppNavigator() {
         {/* Responder Dashboard Modules */}
         <Stack.Screen name="ResponderDashboard" component={ResponderDashboard} options={{ headerShown: false }} />
         <Stack.Screen name="AlertsNotifications" component={AlertsNotifications} options={{ headerShown: false }} />
+        <Stack.Screen name="ResponderDangerZone" component={ResponderDangerZone} options={{ headerShown: false }} />
+        <Stack.Screen name="ResponderDangerZoneDetails" component={ResponderDangerZoneDetails} options={{ headerShown: false }} />
 
         {/* Dynamic Incident Overview Modules */}
         <Stack.Screen name="ResponderIncidentDetails" component={ResponderIncidentDetailsScreen} options={{ headerShown: false }} />
