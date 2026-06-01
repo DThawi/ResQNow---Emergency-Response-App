@@ -6,6 +6,12 @@ import SplashScreen from "../screens/auth/SplashScreen";
 import LoginScreen from "../screens/auth/LoginScreen";
 import Register1 from "../screens/auth/Register1";
 import Register2 from "../screens/auth/Register2";
+import Register3 from "../screens/auth/Register3";
+import Register4 from "../screens/auth/Register4";
+import Register5 from "../screens/auth/Register5";
+import Register6 from "../screens/auth/Register6";
+import Register7 from "../screens/auth/Register7";
+import Register8 from "../screens/auth/Register8";
 import VerifyIdentity from "../screens/auth/VerifyIdentity";
 import SetPassword from "../screens/auth/SetPassword";
 import SuccessfulSetPassword from "../screens/auth/SuccessfulSetPassword";
@@ -53,7 +59,8 @@ import ResponderIncidentDetailsScreen4 from "../screens/Responder/IncidentDetail
 // Kept verified responder dashboard views from your folder list
 import ResponderDashboard from "../screens/Responder/ResponderDashboard";
 import AlertsNotifications from "../screens/Responder/AlertsNotifications";
-
+import ResponderDangerZone from "../screens/Responder/ResponderDangerzones";
+import ResponderDangerZoneDetails from "../screens/Responder/ResponderDangerZoneDetails";
 
 
 const Stack = createNativeStackNavigator();
@@ -72,6 +79,12 @@ export default function AppNavigator() {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register1" component={Register1} />
         <Stack.Screen name="Register2" component={Register2} />
+        <Stack.Screen name="Register3" component={Register3} />
+        <Stack.Screen name="Register4" component={Register4} options={{ headerShown: false }} />
+        <Stack.Screen name="Register5" component={Register5} options={{ headerShown: false }} />
+        <Stack.Screen name="Register6" component={Register6} options={{ headerShown: false }} />
+        <Stack.Screen name="Register7" component={Register7} options={{ headerShown: false }} />
+        <Stack.Screen name="Register8" component={Register8} options={{ headerShown: false }} />
         <Stack.Screen name="VerifyIdentity" component={VerifyIdentity} />
         <Stack.Screen name="SetPassword" component={SetPassword} />
         <Stack.Screen name="SuccessfulSetPassword" component={SuccessfulSetPassword} />
@@ -121,6 +134,8 @@ export default function AppNavigator() {
         {/* Responder Dashboard Modules */}
         <Stack.Screen name="ResponderDashboard" component={ResponderDashboard} options={{ headerShown: false }} />
         <Stack.Screen name="AlertsNotifications" component={AlertsNotifications} options={{ headerShown: false }} />
+        <Stack.Screen name="ResponderDangerZone" component={ResponderDangerZone} options={{ headerShown: false }} />
+        <Stack.Screen name="ResponderDangerZoneDetails" component={ResponderDangerZoneDetails} options={{ headerShown: false }} />
 
         {/* Dynamic Incident Overview Modules */}
         <Stack.Screen name="ResponderIncidentDetails" component={ResponderIncidentDetailsScreen} options={{ headerShown: false }} />

@@ -187,7 +187,7 @@ export default function ResponderDashboard({ navigation }) {
           <View className="mx-4 mt-4 flex-row flex-wrap gap-3">
             {[
               { icon: '🧭', label: 'Navigate', sub: 'To incident', color: 'text-[#D62828]' },
-              { icon: '🔔', label: 'Alerts', sub: 'View all', color: 'text-yellow-500' },
+              { icon: '⚠️', label: 'Risk Zones', sub: 'Analytics', color: 'text-orange-500' },
               { icon: '🕐', label: 'Activity', sub: 'View log', color: 'text-blue-500' },
               { icon: '✅', label: 'Complete', sub: 'Mark resolved', color: 'text-green-500' },
             ].map((action) => (
@@ -198,6 +198,7 @@ export default function ResponderDashboard({ navigation }) {
                 onPress={() => {
                   if (action.label === 'Alerts') navigation?.navigate('AlertsNotifications');
                   if (action.label === 'Navigate') navigation?.navigate('ResponderMap');
+                  if (action.label === 'Risk Zones') navigation?.navigate('ResponderDangerZone');
                 }}
               >
                 <Text className="text-2xl mb-1">{action.icon}</Text>
